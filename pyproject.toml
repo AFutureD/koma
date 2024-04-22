@@ -1,0 +1,32 @@
+[project]
+name = "QA-Mac"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "尼诺", email = "ninuo@eastgarden.com"},
+]
+dependencies = [
+    "click>=8.1.7",
+    "markdownify>=0.12.1",
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project.scripts]
+qa = "qa:cli"
+
+[tool.pdm.scripts]
+qa = {call = "qa:cli"}
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pip>=24.0",
+]

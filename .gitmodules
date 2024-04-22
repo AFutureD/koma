@@ -1,0 +1,3 @@
+[submodule "vendor/apple_cloud_notes_parser"]
+	path = vendor/apple_cloud_notes_parser
+	url = https://github.com/threeplanetssoftware/apple_cloud_notes_parser

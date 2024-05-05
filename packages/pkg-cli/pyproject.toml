@@ -1,0 +1,19 @@
+[project]
+name = "cli"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "AFuture", email = "afuture.d@outlook.com"},
+]
+dependencies = [
+    "click>=8.1.7",
+    "tomlkit>=0.12.4",
+    "loci"
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"

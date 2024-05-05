@@ -1,0 +1,22 @@
+[project]
+name = "loci"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "AFuture", email = "afuture.d@outlook.com"},
+]
+dependencies = [
+    "protobuf>=5.26.1",
+    "motor[srv]>=3.4.0",
+    "beanie>=1.25.0",
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project.scripts]
+qa = "q:cli"

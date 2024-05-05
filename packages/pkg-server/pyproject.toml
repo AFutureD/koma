@@ -1,0 +1,19 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "AFuture", email = "afuture.d@outlook.com"},
+]
+dependencies = [
+    "fastapi>=0.110.2",
+    "uvicorn[standard]>=0.29.0",
+    "loci"
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"

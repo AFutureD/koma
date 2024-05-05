@@ -1,0 +1,2 @@
+[database]
+mongodb.uri = "mongodb+srv://username:password@domain.com"

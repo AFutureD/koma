@@ -1,24 +1,12 @@
 import asyncio
-import json
 import logging
 import os
 
 import click
 import tomlkit
-from beanie import init_beanie
-from bson import CodecOptions
-from motor.motor_asyncio import AsyncIOMotorClient
-
-from loci.domain import Memory
-from loci.domain.entity.memory import MemorySyncLog
-from .service.memory import MemoryBizService
 
 main_loop = asyncio.get_event_loop()
 logging.basicConfig(level=logging.WARNING)
-
-
-async def init_db(mongodb_client):
-    await init_beanie(database = mongodb_client.get_database('test', CodecOptions(tz_aware=True)), document_models = [Memory, MemorySyncLog])
 
 
 class Config:
@@ -65,21 +53,17 @@ def read_config(ctx, param, value):
 @pass_config
 def cli(config, silent, verbose):
     """An example application that supports aliases."""
-
-    mongodb_client = AsyncIOMotorClient(config.mongodb_uri)
-    main_loop.run_until_complete(init_db(mongodb_client))
+    pass
 
 
 @cli.command("list")
 def find_all():
     """List all memories."""
-    memories = main_loop.run_until_complete(MemoryBizService().list_all())
-
-    for memory in memories:
-        click.echo(memory.data)
+    #main_loop.run_until_complete()
+    pass
 
 
 @cli.command("sync")
 @click.option("--inc/--no-inc", default=True, help="Incremental sync.")
 def sync(inc: bool):
-    main_loop.run_until_complete(MemoryBizService().sync_notes(inc))
+    pass

@@ -1,14 +1,15 @@
 [project]
-name = "server"
+name = "agent"
 version = "0.1.0"
 description = "Default template for PDM package"
 authors = [
     {name = "AFuture", email = "afuture.d@outlook.com"},
 ]
 dependencies = [
-    "fastapi>=0.110.2",
-    "uvicorn[standard]>=0.29.0",
-    "loci"
+    "django>=5.0.6",
+    "psycopg[binary]>=3.1.19",
+    "python-dotenv>=1.0.1",
+    "djangorestframework>=3.15.1",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
@@ -17,3 +18,12 @@ license = {text = "MIT"}
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "uvicorn>=0.29.0",
+]

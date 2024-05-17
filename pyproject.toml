@@ -1,5 +1,4 @@
 [project]
-dependencies = []
 requires-python = ">=3.12"
 
 [tool.pdm.dev-dependencies]
@@ -18,8 +17,11 @@ ruff = "ruff check"
 mypy = "mypy packages"
 lint = {composite = ["ruff", "mypy"]}
 
-server_test.cmd = "uvicorn src.server.main:app"
+server_test.cmd = "uvicorn agent.asgi:application"
 server_test.env_file = ".env.test"
+
+django_manage.cmd = "python packages/pkg-server/manage.py {args}"
+django_manage.env_file = ".env.test"
 
 query = {call = "cli.endpoint:cli"}
 

@@ -31,9 +31,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     "rag.apps.RagConfig",
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
+    'django.contrib.auth',
 ]
 
 MIDDLEWARE = [

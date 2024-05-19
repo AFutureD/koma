@@ -164,3 +164,4 @@ cython_debug/
 .env.test
 .DS_Store
 config_test.toml
+packages/pkg-server/static/rest_framework

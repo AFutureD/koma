@@ -64,8 +64,10 @@ class ParagraphStyle(BaseModel):
 
         if self.style_type is None and other.style_type is None:
             return True
+        elif self.style_type is not None and other.style_type is None:
+            return self.style_type.group_identifier() >= ParagraphStyleType.DotList.group_identifier()
         elif self.style_type is not None and other.style_type is not None:
-            return self.style_type.group_identifier() == other.style_type.group_identifier()
+            return self.style_type.group_identifier() <= other.style_type.group_identifier()
         else:
             return False
 

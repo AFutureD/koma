@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from pgvector.django import VectorExtension, VectorField
+from pgvector.django import VectorField
 from pgvector.django import HnswIndex
 
 

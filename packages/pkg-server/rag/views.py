@@ -4,7 +4,7 @@ from typing import List
 
 import tiktoken
 from django.http import JsonResponse
-from pgvector.django import L2Distance, CosineDistance
+from pgvector.django import CosineDistance
 from rest_framework import serializers
 import openai
 from rest_framework.decorators import api_view

@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:aa7ea1ffce2bfd88b1092f3accec5fcaf58d1b9ef83200e77b0a0b0ad70c5a84"
+content_hash = "sha256:f55feb51dcefbe87769fa1b2365f200051725eaf7fa52d82a663f34b121e4a0f"
 
 [[package]]
 name = "agent"
@@ -164,6 +164,55 @@ dependencies = [
 files = [
     {file = "Django-5.0.6-py3-none-any.whl", hash = "sha256:8363ac062bb4ef7c3f12d078f6fa5d154031d129a15170a1066412af49d30905"},
     {file = "Django-5.0.6.tar.gz", hash = "sha256:ff1b61005004e476e0aeea47c7f79b85864c70124030e95146315396f1e7951f"},
+]
+
+[[package]]
+name = "django-stubs"
+version = "5.0.0"
+requires_python = ">=3.8"
+summary = "Mypy stubs for Django"
+groups = ["dev"]
+dependencies = [
+    "asgiref",
+    "django",
+    "django-stubs-ext>=5.0.0",
+    "types-PyYAML",
+    "typing-extensions",
+]
+files = [
+    {file = "django_stubs-5.0.0-py3-none-any.whl", hash = "sha256:084484cbe16a6d388e80ec687e46f529d67a232f3befaf55c936b3b476be289d"},
+    {file = "django_stubs-5.0.0.tar.gz", hash = "sha256:b8a792bee526d6cab31e197cb414ee7fa218abd931a50948c66a80b3a2548621"},
+]
+
+[[package]]
+name = "django-stubs-ext"
+version = "5.0.0"
+requires_python = ">=3.8"
+summary = "Monkey-patching and extensions for django-stubs"
+groups = ["dev"]
+dependencies = [
+    "django",
+    "typing-extensions",
+]
+files = [
+    {file = "django_stubs_ext-5.0.0-py3-none-any.whl", hash = "sha256:8e1334fdf0c8bff87e25d593b33d4247487338aaed943037826244ff788b56a8"},
+    {file = "django_stubs_ext-5.0.0.tar.gz", hash = "sha256:5bacfbb498a206d5938454222b843d81da79ea8b6fcd1a59003f529e775bc115"},
+]
+
+[[package]]
+name = "django-stubs"
+version = "5.0.0"
+extras = ["compatible-mypy"]
+requires_python = ">=3.8"
+summary = "Mypy stubs for Django"
+groups = ["dev"]
+dependencies = [
+    "django-stubs==5.0.0",
+    "mypy~=1.10.0",
+]
+files = [
+    {file = "django_stubs-5.0.0-py3-none-any.whl", hash = "sha256:084484cbe16a6d388e80ec687e46f529d67a232f3befaf55c936b3b476be289d"},
+    {file = "django_stubs-5.0.0.tar.gz", hash = "sha256:b8a792bee526d6cab31e197cb414ee7fa218abd931a50948c66a80b3a2548621"},
 ]
 
 [[package]]
@@ -685,6 +734,17 @@ files = [
 ]
 
 [[package]]
+name = "types-pyyaml"
+version = "6.0.12.20240311"
+requires_python = ">=3.8"
+summary = "Typing stubs for PyYAML"
+groups = ["dev"]
+files = [
+    {file = "types-PyYAML-6.0.12.20240311.tar.gz", hash = "sha256:a9e0f0f88dc835739b0c1ca51ee90d04ca2a897a71af79de9aec5f38cb0a5342"},
+    {file = "types_PyYAML-6.0.12.20240311-py3-none-any.whl", hash = "sha256:b845b06a1c7e54b8e5b4c683043de0d9caf205e7434b3edc678ff2411979b8f6"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.11.0"
 requires_python = ">=3.8"
@@ -716,4 +776,19 @@ groups = ["dev"]
 files = [
     {file = "urllib3-2.2.1-py3-none-any.whl", hash = "sha256:450b20ec296a467077128bff42b73080516e71b56ff59a60a02bef2232c4fa9d"},
     {file = "urllib3-2.2.1.tar.gz", hash = "sha256:d0570876c61ab9e520d776c38acbbb5b05a776d3f9ff98a5c8fd5162a444cf19"},
+]
+
+[[package]]
+name = "uvicorn"
+version = "0.29.0"
+requires_python = ">=3.8"
+summary = "The lightning-fast ASGI server."
+groups = ["dev"]
+dependencies = [
+    "click>=7.0",
+    "h11>=0.8",
+]
+files = [
+    {file = "uvicorn-0.29.0-py3-none-any.whl", hash = "sha256:2c2aac7ff4f4365c206fd773a39bf4ebd1047c238f8b8268ad996829323473de"},
+    {file = "uvicorn-0.29.0.tar.gz", hash = "sha256:6a69214c0b6a087462412670b3ef21224fa48cae0e452b5883e8e8bdfdd11dd0"},
 ]

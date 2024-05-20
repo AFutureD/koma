@@ -123,6 +123,5 @@ class NoteAttachmentTable(NoteAttachment, metaclass=NoteAttachmentMetaClass):
 class NoteAttachmentTag(NoteAttachment, metaclass=NoteAttachmentMetaClass):
     pass
 
-
 class NoteAttachmentGallery(NoteAttachment, metaclass=NoteAttachmentMetaClass):
     pass

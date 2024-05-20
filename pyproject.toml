@@ -9,6 +9,8 @@ dev = [
     "ruff>=0.4.3",
     "mypy>=1.10.0",
     "types-protobuf>=5.26.0.20240422",
+    "uvicorn>=0.29.0",
+    "django-stubs[compatible-mypy]>=5.0.0",
 ]
 
 [tool.pdm.scripts]
@@ -27,6 +29,13 @@ query = {call = "cli.endpoint:cli"}
 
 [tool.ruff]
 src = ["packages/pkg-core", "packages/pkg-cli", "packages/pkg-server"]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "agent.settings"
 
 [tool.ruff.lint]
 fixable = ["ALL"]

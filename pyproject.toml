@@ -11,6 +11,7 @@ dev = [
     "types-protobuf>=5.26.0.20240422",
     "uvicorn>=0.29.0",
     "django-stubs[compatible-mypy]>=5.0.0",
+    "ipython>=8.24.0",
 ]
 
 [tool.pdm.scripts]

@@ -1,4 +1,10 @@
 {
     "python.autoComplete.extraPaths": ["__pypackages__/<major.minor>/lib"],
-    "python.analysis.extraPaths": ["__pypackages__/<major.minor>/lib"]
+    "python.analysis.extraPaths": ["__pypackages__/<major.minor>/lib"],
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/.mypy_cache": true,
+      ".pdm-python": true,
+      "**/.pdm-build": true
+    }
   }

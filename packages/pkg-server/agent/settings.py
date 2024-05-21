@@ -71,10 +71,14 @@ WSGI_APPLICATION = 'agent.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": environ.get("DB_NAME", "DB_NAME"),
-        "USER": environ.get("DB_USER", "DB_USER"),
-        "PASSWORD": environ.get("DB_PASSWORD", "DB_PASSWORD"),
-        "HOST": environ.get("DB_HOST", "DB_HOST"),
+        'NAME': environ.get('PGDATABASE', 'PGDATABASE'),
+        'USER': environ.get('PGUSER', 'PGUSER'),
+        'PASSWORD': environ.get('PGPASSWORD', 'PGPASSWORD'),
+        'HOST': environ.get('PGHOST', 'PGHOST'),
+        'PORT': environ.get('PGPORT', 5432),
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 

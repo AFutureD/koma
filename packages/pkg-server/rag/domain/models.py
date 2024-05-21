@@ -1,12 +1,11 @@
 from typing import Any
 
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from pgvector.django import HnswIndex, VectorField
 from pydantic import BaseModel
 
 from loci.domain.models.note import Note
-
+from .enum import MemoryType
 
 class AppleNoteField(models.JSONField):
     def __init__(self, *args, **kwargs):
@@ -52,12 +51,7 @@ class AppleNoteField(models.JSONField):
 
 class Memory(models.Model):
 
-    class MemoryType(models.TextChoices):
-        NOTE = "NOTE", _("NOTE")
-        REMINDER = "REMINDER", _("REMINDER")
-        PIC = "PIC", _("PIC")
-
-    memory_type = models.CharField(choices = MemoryType.choices,)
+    memory_type = models.CharField(choices = MemoryType.choices)
     data = AppleNoteField(null=True)
 
     updated_at = models.DateTimeField(auto_now = True)

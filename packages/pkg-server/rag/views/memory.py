@@ -2,17 +2,16 @@ import itertools
 from datetime import datetime
 from typing import List
 
+import openai
 import tiktoken
 from django.http import JsonResponse
-from pgvector.django import CosineDistance
 from rest_framework import serializers
-import openai
-from rest_framework.decorators import api_view
 
 from loci.domain import Note
 from loci.infra.fetchers.apple import AppleNotesFetcher
 from loci.infra.renderers.markdown import MarkDown
-from rag.models import Memory, MemorySyncLog, Neuron
+from ..domain.models import Memory, MemorySyncLog, Neuron
+from ..dto.memory import MemoryDTO
 
 client = openai.OpenAI()
 
@@ -22,19 +21,13 @@ class MemorySerializer(serializers.ModelSerializer):
         model = Memory
         fields = '__all__'
 
-
-class NeuronSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Neuron
-        fields = ['content']
-
-
-def index(request):
+def list_memories(request):
 
     memories = Memory.objects.all()
 
-    serializer = MemorySerializer(memories, many=True)
-    return JsonResponse(serializer.data, safe = False)
+    dto = MemoryDTO.from_model_list(memories)
+
+    return JsonResponse({'data': dto, 'message': None, 'code': 200, 'success': True}, safe = False)
 
 
 def sync_memories(request):
@@ -115,20 +108,3 @@ def generate_neurons(note: Note) -> List[Neuron]:
     neurons = perform(paragraph_content, model = "text-embedding-3-small")
 
     return neurons
-
-
-@api_view(['GET'])
-def search_neurons(request):
-
-    query = request.query_params.get('q', None)
-    if query is None or query == '':
-        return JsonResponse({'data': None, 'message': 'q is required', 'code': 400, 'success': False})
-
-    result = client.embeddings.create(input = query, model = "text-embedding-3-small")
-    embedding = result.data[0].embedding
-    print(embedding)
-
-    neurons = Neuron.objects.alias(distance = CosineDistance('embedding', embedding)).filter(distance__lt = 0.80)
-
-    serializer = NeuronSerializer(neurons, many = True)
-    return JsonResponse({'data': serializer.data, 'message': None, 'code': 200, 'success': True})

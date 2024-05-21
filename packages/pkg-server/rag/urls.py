@@ -1,10 +1,9 @@
 from django.urls import path
-from django.urls import path, re_path
 
-from . import views
+from .views import memory, neuron
 
 urlpatterns = [
-    path("memories/list", views.index, name="list_memories"),
-    path("memories/sync", views.sync_memories, name="sync_memories"),
-    path("neurons/search", views.search_neurons, name="search neurons"),
+    path("memories/list", memory.list_memories, name="list_memories"),
+    path("memories/sync", memory.sync_memories, name="sync_memories"),
+    path("neurons/search", neuron.search_neurons, name="search neurons"),
 ]

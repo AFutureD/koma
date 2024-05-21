@@ -2,7 +2,9 @@ import itertools
 from datetime import datetime
 from typing import List
 
+from loci.domain.models.note import NoteContentParagraph
 import openai
+from rag.domain.enum import MemoryType
 import tiktoken
 from django.http import JsonResponse
 from rest_framework import serializers
@@ -10,7 +12,7 @@ from rest_framework import serializers
 from loci.domain import Note
 from loci.infra.fetchers.apple import AppleNotesFetcher
 from loci.infra.renderers.markdown import MarkDown
-from ..domain.models import Memory, MemorySyncLog, Neuron
+from ..domain.models import Memory, MemorySyncLog, Neuron, Position
 from ..dto.memory import MemoryDTO
 
 client = openai.OpenAI()
@@ -53,7 +55,7 @@ def sync_memories(request):
         return JsonResponse({'data': None, 'message': None, 'code': 200, 'success': True})
 
     memories = [
-        Memory(memory_type = Memory.MemoryType.NOTE, data = note.model_dump(mode = 'json'))
+        Memory(memory_type = MemoryType.NOTE, data = note.model_dump(mode = 'json'), biz_id = note.uuid)
         for note in to_update_notes
     ]
 
@@ -79,32 +81,28 @@ def sync_memories(request):
     return JsonResponse({'data': None, 'message': None, 'code': 200, 'success': True})
 
 
-def perform(content: List[str], model: str):
-    if len(content) == 0:
-        return []
-
-    enc = tiktoken.get_encoding("cl100k_base")
-    total_token = sum([len(enc.encode(c)) for c in content])
-
-    assert total_token <= 8191, "Too many tokens"
-
-    result = client.embeddings.create(input = content, model = model)
-
-    neurons = [
-        Neuron(embedding = data.embedding, content = content[data.index])
-        for data in result.data
-    ]
-
-    return neurons
-
-
 def generate_neurons(note: Note) -> List[Neuron]:
 
     paragraph_list = note.content.paragraph_list
     if len(paragraph_list) == 0:
         return []
     # check if represent is not blank
-    paragraph_content = [p.represent for p in paragraph_list if p.represent is not None and not p.represent.isspace()]
-    neurons = perform(paragraph_content, model = "text-embedding-3-small")
+    indexable_paragraph = [{"idx":idx, "content": p.represent} for idx, p in enumerate(paragraph_list) if p.represent is not None and not p.represent.isspace()]
+
+    if len(indexable_paragraph) == 0:
+        return []
+
+    enc = tiktoken.get_encoding("cl100k_base")
+    total_token = sum([len(enc.encode(c["content"])) for c in indexable_paragraph])
+
+    assert total_token <= 8191, "Too many tokens"
+
+    content = [p["content"] for p in indexable_paragraph]
+    result = client.embeddings.create(input = content, model = "text-embedding-3-small")
+
+    neurons = [
+        Neuron(embedding = data.embedding, content = indexable_paragraph[data.index]["content"], biz_id=note.uuid, position=Position(paragraph=indexable_paragraph[data.index]["idx"]))
+        for data in result.data
+    ]
 
     return neurons

@@ -54,6 +54,8 @@ class Memory(models.Model):
     memory_type = models.CharField(choices = MemoryType.choices)
     data = AppleNoteField(null=True)
 
+    biz_id = models.CharField(max_length = 100, null = True)
+
     updated_at = models.DateTimeField(auto_now = True)
     created_at = models.DateTimeField(auto_now_add = True)
 
@@ -78,9 +80,52 @@ class MemorySyncLog(models.Model):
         ordering = ["-biz_modified_at"]
 
 
+class Position(BaseModel):
+    chapter: int | None = None
+    section: int | None = None 
+    paragraph: int | None = None
+    line: int | None = None
+
+class PositionField(models.JSONField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return value
+        json_value = super().from_db_value(value, expression, connection)
+        return Position(**json_value)
+    
+    def get_prep_value(self, value: Any) -> Any:
+        if value is None:
+            return value
+        
+        if isinstance(value, BaseModel):
+            return value.model_dump(mode = 'json')
+        else:
+            return value
+
+    def to_python(self, value: Any) -> None | Position:
+        if value is None:
+            return value
+        if isinstance(value, Position):
+            return value
+
+        if isinstance(value, str):
+            import json
+            json_value = json.loads(value)
+        elif isinstance(value, dict):
+            json_value = value
+        else:
+            super().to_python(value)
+        return Position(**json_value)
+
 class Neuron(models.Model):
     content = models.TextField(null = False)
     embedding = VectorField(dimensions = 1536)
+
+    biz_id = models.CharField(max_length = 100, null = True)
+    position = PositionField(null = True)
 
     class Meta:
         db_table = 'neurons'

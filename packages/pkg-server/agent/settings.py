@@ -25,13 +25,14 @@ SECRET_KEY = 'django-insecure-k+gu53zkf5v#5pawy)39c16qv_3phd%7dt1wf9e5z3l738-)@o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "*"
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
     "rag.apps.RagConfig",
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',

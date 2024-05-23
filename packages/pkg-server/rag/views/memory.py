@@ -2,36 +2,33 @@ import itertools
 from datetime import datetime
 from typing import List
 
-from loci.domain.models.note import NoteContentParagraph
 import openai
-from rag.domain.enum import MemoryType
 import tiktoken
 from django.http import JsonResponse
-from rest_framework import serializers
+from ninja import Router
 
 from loci.domain import Note
 from loci.infra.fetchers.apple import AppleNotesFetcher
 from loci.infra.renderers.markdown import MarkDown
+from ..dto.common import Result
+from ..domain.enum import MemoryType
 from ..domain.models import Memory, MemorySyncLog, Neuron, Position
 from ..dto.memory import MemoryDTO
 
 client = openai.OpenAI()
+router = Router()
 
-
-class MemorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Memory
-        fields = '__all__'
-
-def list_memories(request):
+@router.get('/list.json', response=Result[List[MemoryDTO]])
+def list_memories(request) -> Result[List[MemoryDTO]]:
 
     memories = Memory.objects.all()
 
     dto = MemoryDTO.from_model_list(memories)
+    # result = list(map(lambda x: x.model_dump(mode='json'), dto))
+    
+    return Result[List[MemoryDTO]].succ(dto)
 
-    return JsonResponse({'data': dto, 'message': None, 'code': 200, 'success': True}, safe = False)
-
-
+@router.post('/sync.json')
 def sync_memories(request):
 
     markdown = MarkDown()

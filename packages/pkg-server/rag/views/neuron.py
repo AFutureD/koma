@@ -2,24 +2,17 @@
 import openai
 from django.http import JsonResponse
 from pgvector.django import CosineDistance
-from rest_framework import serializers
-from rest_framework.decorators import api_view
+from ninja import Router
 
 from ..domain.models import Neuron
 from ..dto.memory import NeuronDTO
 
 client = openai.OpenAI()
+router = Router()
 
-class NeuronSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Neuron
-        fields = ['content']
+@router.post('/search.json')
+def search_neurons(request, query: str):
 
-
-@api_view(['GET'])
-def search_neurons(request):
-
-    query = request.query_params.get('q', None)
     if query is None or query == '':
         return JsonResponse({'data': None, 'message': 'q is required', 'code': 400, 'success': False})
 
@@ -29,4 +22,5 @@ def search_neurons(request):
     neurons = Neuron.objects.alias(distance = CosineDistance('embedding', embedding)).filter(distance__lt = 0.80)
 
     dto = NeuronDTO.from_model_list(neurons)
-    return JsonResponse({'data': dto, 'message': None, 'code': 200, 'success': True})
+    result = list(map(lambda x: x.model_dump(mode='json'), dto))
+    return JsonResponse({'data': result, 'message': None, 'code': 200, 'success': True})

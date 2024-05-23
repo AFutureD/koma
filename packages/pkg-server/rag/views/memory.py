@@ -1,5 +1,6 @@
 import itertools
 from datetime import datetime
+from types import NoneType
 from typing import List
 
 import openai
@@ -20,15 +21,13 @@ router = Router()
 
 @router.get('/list.json', response=Result[List[MemoryDTO]])
 def list_memories(request) -> Result[List[MemoryDTO]]:
-
     memories = Memory.objects.all()
 
     dto = MemoryDTO.from_model_list(memories)
-    # result = list(map(lambda x: x.model_dump(mode='json'), dto))
     
-    return Result[List[MemoryDTO]].succ(dto)
+    return Result.with_data(dto)
 
-@router.post('/sync.json')
+@router.post('/sync.json', response=Result[None])
 def sync_memories(request):
 
     markdown = MarkDown()
@@ -75,7 +74,7 @@ def sync_memories(request):
     Memory.objects.bulk_create(memories)
     MemorySyncLog.objects.bulk_create(sync_logs)
     Neuron.objects.bulk_create(neurons)
-    return JsonResponse({'data': None, 'message': None, 'code': 200, 'success': True})
+    return Result.succ()
 
 
 def generate_neurons(note: Note) -> List[Neuron]:

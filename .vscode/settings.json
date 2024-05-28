@@ -4,8 +4,8 @@
     "files.exclude": {
       "**/__pycache__": true,
       "**/.mypy_cache": true,
-      ".pdm-python": true,
+      "**/.pdm-python": true,
       "**/.pdm-build": true,
-      ".venv": true 
+      "**/.venv": true 
     }
   }

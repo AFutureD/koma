@@ -3,6 +3,7 @@
 import pgvector.django
 import rag.domain.models
 from django.db import migrations, models
+from pgvector.django import VectorExtension
 
 
 class Migration(migrations.Migration):
@@ -12,6 +13,7 @@ class Migration(migrations.Migration):
     dependencies = []
 
     operations = [
+        VectorExtension(),
         migrations.CreateModel(
             name="Memory",
             fields=[

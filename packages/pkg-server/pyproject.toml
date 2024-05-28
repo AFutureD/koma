@@ -13,6 +13,11 @@ dependencies = [
     "pgvector>=0.2.5",
     "tiktoken>=0.7.0",
     "django-ninja>=1.1.0",
+    "llama-index-core>=0.10.39.post1",
+    "llama-index-llms-openai>=0.1.21",
+    "llama-index-embeddings-openai>=0.1.10",
+    "llama-index-postprocessor-cohere-rerank>=0.1.6",
+    "llama-index-vector-stores-postgres>=0.1.7",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
@@ -25,6 +30,9 @@ build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
+
+[tool.pdm.build]
+excludes = ["./**/.git"]
 
 [tool.pdm.dev-dependencies]
 dev = [

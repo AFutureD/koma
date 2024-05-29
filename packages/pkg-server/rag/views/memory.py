@@ -5,6 +5,7 @@ from typing import List
 
 import openai
 import tiktoken
+from django.db.models import QuerySet
 from django.http import JsonResponse
 from ninja import Router
 
@@ -15,6 +16,8 @@ from ..dto.common import Result
 from ..domain.enum import MemoryType
 from ..domain.models import Memory, MemorySyncLog, Neuron, Position
 from ..dto.memory import MemoryDTO
+from ..domain.manager import NeuronManager, MemoryManager
+
 
 client = openai.OpenAI()
 router = Router()
@@ -22,7 +25,7 @@ router = Router()
 
 @router.get('/list.json', response=Result[List[MemoryDTO]])
 def list_memories(request) -> Result[List[MemoryDTO]]:
-    memories = Memory.objects.all()
+    memories = MemoryManager().list_all()
 
     dto = MemoryDTO.from_model_list(memories)
     

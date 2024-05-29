@@ -6,4 +6,4 @@ from rag.domain.models import Memory
 class LlamaIndexTests(TestCase):
     
     def test_documents(self):
-        pass
+        print(Memory.objects.__dict__)

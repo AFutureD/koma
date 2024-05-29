@@ -6,6 +6,7 @@ from pgvector.django import CosineDistance
 from ninja import Router
 
 from ..domain.models import Neuron
+from ..domain.manager import NeuronManager
 from ..dto.memory import NeuronDTO
 from ..dto.common import Result
 
@@ -22,7 +23,7 @@ def search_neurons(request, query: str) -> Result[List[NeuronDTO]]:
     result = client.embeddings.create(input = query, model = "text-embedding-3-small")
     embedding = result.data[0].embedding
 
-    neurons = Neuron.objects.alias(distance = CosineDistance('embedding', embedding)).filter(distance__lt = 0.80)
+    neurons = NeuronManager().list_within_distance_on_embedding(embedding = embedding, distance = 0.80)
 
     dto = NeuronDTO.from_model_list(neurons)
 

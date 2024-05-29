@@ -7,10 +7,10 @@ from pydantic import BaseModel
 from loci.domain.models.note import Note
 from .enum import MemoryType
 
+
 class AppleNoteField(models.JSONField):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    
 
     def from_db_value(self, value, expression, connection):
         """
@@ -45,7 +45,7 @@ class AppleNoteField(models.JSONField):
         elif isinstance(value, dict):
             json_value = value
         else:
-            super().to_python(value)
+            return super().to_python(value)
         return Note(**json_value)
 
 
@@ -61,6 +61,7 @@ class Memory(models.Model):
 
     class Meta:
         db_table = "memories"
+
 
 class MemorySyncLog(models.Model):
     biz_id = models.CharField(max_length = 100)
@@ -85,6 +86,7 @@ class Position(BaseModel):
     section: int | None = None 
     paragraph: int | None = None
     line: int | None = None
+
 
 class PositionField(models.JSONField):
     def __init__(self, *args, **kwargs):
@@ -120,11 +122,12 @@ class PositionField(models.JSONField):
             super().to_python(value)
         return Position(**json_value)
 
+
 class Neuron(models.Model):
     content = models.TextField(null = False)
     embedding = VectorField(dimensions = 1536)
 
-    biz_id = models.CharField(max_length = 100, null = True)
+    memory_id = models.CharField(max_length = 100)
     position = PositionField(null = True)
 
     class Meta:

@@ -17,8 +17,10 @@ dev = [
 [tool.pdm.scripts]
 
 ruff = "ruff check"
-mypy = "mypy packages"
-lint = {composite = ["ruff", "mypy"]}
+mypy_core = "mypy packages/pkg-core"
+mypy_api = "mypy packages/pkg-server"
+mypy = {composite = ["mypy_core", "mypy_api"]}
+lint = {composite = ["mypy", "ruff"]}
 
 server_test.cmd = "uvicorn agent.asgi:application --host 0.0.0.0 --reload"
 server_test.env_file = ".env.test"

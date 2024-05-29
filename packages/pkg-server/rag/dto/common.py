@@ -8,7 +8,7 @@ from typing import TypeVar, Generic, List
 
 from pydantic import BaseModel
 
-T = TypeVar("T", BaseModel, List[BaseModel])
+T = TypeVar("T")
 
 
 class Result(Schema, BaseModel, Generic[T]):

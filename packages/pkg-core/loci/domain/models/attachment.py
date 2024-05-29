@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Protocol
 
 from pydantic import BaseModel, ConfigDict
 from pydantic._internal._model_construction import ModelMetaclass
@@ -23,19 +23,20 @@ class NoteAttachmentTableCell(BaseModel):
 
 class NoteAttachmentFactory(ModelMetaclass):
 
-    def __call__(cls, type_uti: str, *args, **kwargs):
+    def __call__(cls, *args, **kwargs):
+        type_uti = kwargs.get("type_uti")
         if type_uti == "public.url":
-            return NoteAttachmentLink(type_uti = type_uti, **kwargs)
+            return NoteAttachmentLink(**kwargs)
         elif type_uti in ["com.apple.paper", "com.apple.drawing.2", "com.apple.drawing"]:
-            return NoteAttachmentDraw(type_uti = type_uti, **kwargs)
+            return NoteAttachmentDraw(**kwargs)
         elif type_uti in ["com.apple.notes.table"]:
-            return NoteAttachmentTable(type_uti = type_uti, **kwargs)
+            return NoteAttachmentTable(**kwargs)
         elif type_uti in ["com.apple.notes.inlinetextattachment.hashtag"]:
-            return NoteAttachmentTag(type_uti = type_uti, **kwargs)
+            return NoteAttachmentTag(**kwargs)
         elif type_uti == "com.apple.notes.gallery":
-            return NoteAttachmentGallery(type_uti = type_uti, **kwargs)
+            return NoteAttachmentGallery(**kwargs)
         else:
-            return NoteAttachmentMedia(type_uti = type_uti, **kwargs)
+            return NoteAttachmentMedia(**kwargs)
 
 
 class NoteAttachmentMetaClass(NoteAttachmentFactory):
@@ -122,6 +123,7 @@ class NoteAttachmentTable(NoteAttachment, metaclass=NoteAttachmentMetaClass):
 
 class NoteAttachmentTag(NoteAttachment, metaclass=NoteAttachmentMetaClass):
     pass
+
 
 class NoteAttachmentGallery(NoteAttachment, metaclass=NoteAttachmentMetaClass):
     pass

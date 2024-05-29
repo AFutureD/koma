@@ -29,12 +29,12 @@ class MemoryDTO(BaseModel):
 
 class NeuronDTO(BaseModel):
     content: str = Field(title = "The content of the neuron")
-    biz_id: str = Field(title = "The biz id of the original object in memory.")
+    memory_id: str = Field(title = "The id of the memory that the neuron belongs to.")
 
     @staticmethod
     def from_model(model: Neuron) -> 'NeuronDTO':
         return NeuronDTO(
-            content=model.content, biz_id=model.biz_id
+            content=model.content, memory_id=model.memory_id
         )
     
     @staticmethod

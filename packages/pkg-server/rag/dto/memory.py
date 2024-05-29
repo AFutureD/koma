@@ -1,17 +1,17 @@
 
 from datetime import datetime
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from loci.domain.models.note import Note
 from ..domain.models import Memory, Neuron
 
 
 class MemoryDTO(BaseModel):
-    memory_type: str
+    memory_type: str = Field(title = "The type of the memory.")
     data: Note  # temporary usage
-    updated_at: datetime
-    created_at: datetime
+    updated_at: datetime = Field(title = "The last updated time of the memory.")
+    created_at: datetime = Field(title = "The created time of the memory.")
 
     @staticmethod
     def from_model(model: Memory) -> 'MemoryDTO':
@@ -28,12 +28,13 @@ class MemoryDTO(BaseModel):
 
 
 class NeuronDTO(BaseModel):
-    content: str
+    content: str = Field(title = "The content of the neuron")
+    biz_id: str = Field(title = "The biz id of the original object in memory.")
 
     @staticmethod
     def from_model(model: Neuron) -> 'NeuronDTO':
         return NeuronDTO(
-            content=model.content,
+            content=model.content, biz_id=model.biz_id
         )
     
     @staticmethod

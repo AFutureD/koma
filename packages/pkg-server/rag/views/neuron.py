@@ -12,6 +12,7 @@ from ..dto.common import Result
 client = openai.OpenAI()
 router = Router()
 
+
 @router.post('/search.json', response=Result[List[NeuronDTO]])
 def search_neurons(request, query: str) -> Result[List[NeuronDTO]]:
 

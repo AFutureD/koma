@@ -19,6 +19,7 @@ from ..dto.memory import MemoryDTO
 client = openai.OpenAI()
 router = Router()
 
+
 @router.get('/list.json', response=Result[List[MemoryDTO]])
 def list_memories(request) -> Result[List[MemoryDTO]]:
     memories = Memory.objects.all()
@@ -27,14 +28,15 @@ def list_memories(request) -> Result[List[MemoryDTO]]:
     
     return Result.with_data(dto)
 
-@router.post('/sync.json', response=Result[None])
+
+@router.post('/sync.json', response=Result)
 def sync_memories(request):
 
     markdown = MarkDown()
     fetcher = AppleNotesFetcher(markdown)
     fetcher.start()
 
-    notes = fetcher.notes[0:10]
+    notes = fetcher.notes
 
     uuids = list(map(lambda x: x.uuid, notes))
     logs = MemorySyncLog.objects.filter(biz_id__in = uuids)

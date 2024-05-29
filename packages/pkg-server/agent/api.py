@@ -1,9 +1,9 @@
 from ninja import NinjaAPI
 
-api = NinjaAPI()
+api = NinjaAPI(servers = [{"url": "https://studio.afuture.me"}])
 
-api.add_router("/memories", "rag.views.memories_router")
-api.add_router("/neurons", "rag.views.neurons_router")
+api.add_router("/rag", "rag.routers.router")
+
 
 @api.exception_handler(Exception)
 def service_unavailable(request, exception: Exception):

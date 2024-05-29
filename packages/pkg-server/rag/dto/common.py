@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from types import NoneType
 
+from mypy.types import NoneTyp
 from ninja import Schema
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, List
 
 from pydantic import BaseModel
 
-T = TypeVar("T")
+T = TypeVar("T", BaseModel, List[BaseModel])
+
 
 class Result(Schema, BaseModel, Generic[T]):
     """
@@ -24,9 +26,9 @@ class Result(Schema, BaseModel, Generic[T]):
         return Result[T](code=200, success=True, data=data)
 
     @staticmethod
-    def succ() -> Result[None]:
-        return Result[None](code = 200, success = True)
+    def succ() -> Result[T]:
+        return Result[T](code = 200, success = True)
 
     @staticmethod
-    def with_err(code: int, err_msg: str) -> Result[None]:
-        return Result[None](code=code, success=False, err=err_msg)
+    def with_err(code: int, err_msg: str) -> Result[T]:
+        return Result[T](code=code, success=False, err=err_msg)

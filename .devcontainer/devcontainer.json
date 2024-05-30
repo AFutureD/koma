@@ -1,0 +1,35 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+    }
+  },
+  "remoteEnv": {
+      // Add local Python packages compatible installed with PDM in PEP 582 mode to search path.
+      "PATH": "${containerEnv:PATH}:/${containerWorkspaceFolder}/__pypackages__/3.12/bin",
+      "PYTHONPATH": "${containerEnv:PYTHONPATH}:/${containerWorkspaceFolder}/__pypackages__/3.12/lib"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "GitHub.copilot",
+        "ms-python.mypy-type-checker",
+        "ms-python.vscode-pylance",
+        "ms-python.debugpy",
+        "charliermarsh.ruff",
+        "vscode-icons-team.vscode-icons"
+      ]
+    }
+  },
+  "forwardPorts": [8000],
+  "postCreateCommand": [
+    "pipx install pdm", 
+    "pdm install"
+  ]
+}

@@ -21,3 +21,13 @@ def search_neurons(request, query: str) -> Result[List[NeuronDTO]]:
     dto = neuron_biz_services.search_neurons(query)
 
     return Result.with_data(dto)
+
+
+@router.post('/search.text', response=Result[str])
+def search_neurons(request, query: str) -> Result[str]:
+    return Result.with_data("")
+
+
+@router.post('/summrize.text', response=Result[str])
+def search_neurons(request, query: str) -> Result[str]:
+    return Result.with_data("")

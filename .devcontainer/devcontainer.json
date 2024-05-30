@@ -6,7 +6,7 @@
     },
     "ghcr.io/devcontainers/features/common-utils:2": {
       "configureZshAsDefaultShell": true,
-      "installOhMyZsh": true,
+      "installOhMyZsh": true
     }
   },
   "remoteEnv": {
@@ -28,8 +28,5 @@
     }
   },
   "forwardPorts": [8000],
-  "postCreateCommand": [
-    "pipx install pdm", 
-    "pdm install"
-  ]
+  "postCreateCommand": "pipx install pdm; pdm install;"
 }

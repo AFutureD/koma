@@ -16,6 +16,10 @@ class MemoryManager(models.Manager[Memory]):
 
     def list_all(self) -> List[Memory]:
         return list(self.all())
+    
+    def list_by_biz_ids(self, biz_ids: List[str]) -> List[Memory]:
+        query = self.filter(biz_id__in = biz_ids)
+        return list(query)
 
 
 class MemorySyncLogManager(models.Manager[MemorySyncLog]):
@@ -24,7 +28,8 @@ class MemorySyncLogManager(models.Manager[MemorySyncLog]):
         self.contribute_to_class(MemorySyncLog, MODEL_MANAGER_ATTRIBUTE)
 
     def list_by_biz_ids(self, biz_ids: List[str]) -> List[MemorySyncLog]:
-        query = self.filter(biz_id__in = biz_ids)
+        # group by biz_id and find the max modified_at
+        query = self.filter(biz_id__in = biz_ids).distinct('biz_id').order_by('biz_id', '-biz_modified_at')
         return list(query)
     
 

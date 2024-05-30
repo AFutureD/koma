@@ -55,7 +55,7 @@ class Memory(models.Model):
     memory_type = models.CharField(choices = MemoryType.choices)
     data = AppleNoteField(null=True)
 
-    biz_id = models.CharField(max_length = 100, null = True)
+    biz_id = models.CharField(max_length = 100)
 
     updated_at = models.DateTimeField(auto_now = True)
     created_at = models.DateTimeField(auto_now_add = True)

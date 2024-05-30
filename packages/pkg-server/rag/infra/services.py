@@ -20,33 +20,50 @@ client = openai.OpenAI()
 
 
 class MemorySerivce:
-    def fetch_modified_memories(self) -> List[Memory]:
+    def sync_modified_memories(self) -> List[Memory]:
         markdown = MarkDown()
         fetcher = AppleNotesFetcher(markdown)
         fetcher.start()
 
         notes = fetcher.notes[0:10]
-
         uuids = list(map(lambda x: x.uuid, notes))
-        logs = MemorySyncLogManager().list_by_biz_ids(uuids)
 
+        logs = MemorySyncLogManager().list_by_biz_ids(uuids)
         last_modified_map_by_biz_id = {log.biz_id: log.biz_modified_at for log in logs}
 
-        fallback_modified_time = datetime(1970, 1, 1).astimezone()
-        to_update_notes = list(filter(
-            lambda note: note.modified_at > last_modified_map_by_biz_id.get(note.uuid, fallback_modified_time),
-            notes
-        ))
-
-        memories = [
-            Memory(memory_type = MemoryType.NOTE, data = note, biz_id = note.uuid)
-            for note in to_update_notes
+        to_create_notes = [
+            note 
+            for note in notes 
+            if note.uuid not in last_modified_map_by_biz_id.keys()
         ]
 
-        return memories
-    
-    def save_modified_memories(self, memories: List[Memory]) -> List[Memory]:
+        to_update_notes = list(filter(
+            lambda note: note.modified_at > last_modified_map_by_biz_id.get(note.uuid),
+            notes
+        ))
         
+        to_update_biz_ids = list(map(lambda note: note.uuid, to_update_notes))
+        to_update_memories = MemoryManager().list_by_biz_ids(to_update_biz_ids)
+
+
+        created_memories = [
+            Memory(memory_type = MemoryType.NOTE, data = note, biz_id = note.uuid)
+            for note in to_create_notes
+        ]
+        
+        to_update_notes_map_by_biz_id = {note.uuid: note for note in to_update_notes}
+        for memory in to_update_memories:
+            note =  to_update_notes_map_by_biz_id.get(memory.biz_id)
+            if note is None:
+                continue
+            
+            memory.data = note
+
+        MemoryManager().bulk_create(created_memories)
+        MemoryManager().bulk_update(to_update_memories, fields=["data"], batch_size=20)
+
+        memories = created_memories + to_update_memories
+
         sync_logs = [
             MemorySyncLog(
                 biz_id = memory.biz_id,
@@ -55,7 +72,6 @@ class MemorySerivce:
             for memory in memories
         ]
 
-        MemoryManager().bulk_create(memories)
         MemorySyncLogManager().bulk_create(sync_logs)
 
         return memories
@@ -69,6 +85,7 @@ class NeuronService:
         NeuronManager().bulk_create(neurons)
         return
 
+
 class MemoryBizService:
     
     memory_service = MemorySerivce()
@@ -80,14 +97,12 @@ class MemoryBizService:
         return dto
     
     def sync_memories(self):
-        memories = self.memory_service.fetch_modified_memories()
+        memories = self.memory_service.sync_modified_memories()
 
         if len(memories) == 0:
             return
-
-        saved_memories = self.memory_service.save_modified_memories(memories)
-        self.neuron_service.index_memories(saved_memories)
-
+        
+        self.neuron_service.index_memories(memories)
         return
     
 

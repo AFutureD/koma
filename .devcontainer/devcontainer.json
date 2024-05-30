@@ -1,10 +1,5 @@
 {
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
-  "features": {
-    "ghcr.io/devcontainers/features/python:1": {
-      "version": "3.12"
-    }
-  },
   "remoteEnv": {
       // Add local Python packages compatible installed with PDM in PEP 582 mode to search path.
       "PATH": "${containerEnv:PATH}:/${containerWorkspaceFolder}/__pypackages__/3.12/bin",

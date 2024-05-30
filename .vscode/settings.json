@@ -6,6 +6,8 @@
       "**/.mypy_cache": true,
       "**/.pdm-python": true,
       "**/.pdm-build": true,
-      "**/.venv": true 
+      "**/.venv": true,
+      "**/.idea": true,
+      "**/.ruff_cache": true
     }
   }

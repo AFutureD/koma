@@ -1,10 +1,9 @@
-from typing import List, override
+from typing import List
 
 from django.db import models
-from django.db.models import QuerySet
 from pgvector.django import CosineDistance
 
-from .models import Neuron, Memory
+from .models import Memory, Neuron
 
 MODEL_MANAGER_ATTRIBUTE = 'objects'
 

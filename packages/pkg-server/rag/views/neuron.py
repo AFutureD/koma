@@ -1,14 +1,12 @@
 
 from typing import List
+
 import openai
-from django.http import JsonResponse
-from pgvector.django import CosineDistance
 from ninja import Router
 
-from ..domain.models import Neuron
 from ..domain.manager import NeuronManager
-from ..dto.memory import NeuronDTO
 from ..dto.common import Result
+from ..dto.memory import NeuronDTO
 
 client = openai.OpenAI()
 router = Router()

@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-from types import NoneType
+from typing import Generic, TypeVar
 
-from mypy.types import NoneTyp
 from ninja import Schema
-from typing import TypeVar, Generic, List
-
 from pydantic import BaseModel
 
 T = TypeVar("T")

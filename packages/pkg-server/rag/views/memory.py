@@ -1,11 +1,9 @@
 import itertools
 from datetime import datetime
-from types import NoneType
 from typing import List
 
 import openai
 import tiktoken
-from django.db.models import QuerySet
 from django.http import JsonResponse
 from ninja import Router
 
@@ -16,7 +14,7 @@ from ..dto.common import Result
 from ..domain.enum import MemoryType
 from ..domain.models import Memory, MemorySyncLog, Neuron, Position
 from ..dto.memory import MemoryDTO
-from ..domain.manager import NeuronManager, MemoryManager
+from ..domain.manager import MemoryManager
 
 
 client = openai.OpenAI()

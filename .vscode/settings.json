@@ -9,5 +9,9 @@
       "**/.venv": true,
       "**/.idea": true,
       "**/.ruff_cache": true
-    }
+    },
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.inlayHints.pytestParameters": true,
+    "editor.inlayHints.padding": true
   }

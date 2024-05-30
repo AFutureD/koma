@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from loci.domain.models.note import Note
 
-from .enum import MemoryType
+from .enum import EmbedModel, IndexState, MemoryType
 
 
 class AppleNoteField(models.JSONField):
@@ -130,6 +130,7 @@ class Neuron(models.Model):
 
     memory_id = models.CharField(max_length = 100)
     position = PositionField(null = True)
+    embed_model = models.CharField(choices = EmbedModel.choices)
 
     class Meta:
         db_table = 'neurons'

@@ -24,7 +24,7 @@ class Result(Schema, BaseModel, Generic[T]):
 
     @staticmethod
     def succ() -> Result[T]:
-        return Result[T](code = 200, success = True)
+        return Result[T](code=200, success=True)
 
     @staticmethod
     def with_err(code: int, err_msg: str) -> Result[T]:

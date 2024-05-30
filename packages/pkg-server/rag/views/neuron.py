@@ -7,22 +7,17 @@ from ninja import Router
 from ..domain.manager import NeuronManager
 from ..dto.common import Result
 from ..dto.memory import NeuronDTO
+from ..infra.services import NeuronBizSerivces
 
 client = openai.OpenAI()
 router = Router()
 
 
+neuron_biz_services = NeuronBizSerivces()
+
 @router.post('/search.json', response=Result[List[NeuronDTO]])
 def search_neurons(request, query: str) -> Result[List[NeuronDTO]]:
 
-    if query is None or query == '':
-        return Result.with_data([])
-
-    result = client.embeddings.create(input = query, model = "text-embedding-3-small")
-    embedding = result.data[0].embedding
-
-    neurons = NeuronManager().list_within_distance_on_embedding(embedding = embedding, distance = 0.80)
-
-    dto = NeuronDTO.from_model_list(neurons)
+    dto = neuron_biz_services.search_neurons(query)
 
     return Result.with_data(dto)

@@ -30,7 +30,7 @@ class AppleNoteField(models.JSONField):
             return value
         
         if isinstance(value, BaseModel):
-            return value.model_dump(mode = 'json')
+            return value.model_dump(mode = 'json', exclude_none = True)
         else:
             return value
 
@@ -51,6 +51,7 @@ class AppleNoteField(models.JSONField):
 
 
 class Memory(models.Model):
+    memory_id = models.AutoField(primary_key = True)
 
     memory_type = models.CharField(choices = MemoryType.choices)
     data = AppleNoteField(null=True)
@@ -62,9 +63,14 @@ class Memory(models.Model):
 
     class Meta:
         db_table = "memories"
+        constraints = [
+            models.UniqueConstraint(fields = ['biz_id'], name = 'uk_biz_id')
+        ]
 
 
 class MemorySyncLog(models.Model):
+    log_id = models.AutoField(primary_key = True)
+
     biz_id = models.CharField(max_length = 100)
     biz_modified_at = models.DateTimeField(auto_now = True)
 
@@ -75,9 +81,6 @@ class MemorySyncLog(models.Model):
         db_table = "memories_sync_log"
         indexes = [
             models.Index(fields = ['biz_modified_at'], name = "idx_biz_modified_at")
-        ]
-        constraints = [
-            models.UniqueConstraint(fields = ['biz_id'], name = 'uk_biz_id')
         ]
         ordering = ["-biz_modified_at"]
 
@@ -104,7 +107,7 @@ class PositionField(models.JSONField):
             return value
         
         if isinstance(value, BaseModel):
-            return value.model_dump(mode = 'json')
+            return value.model_dump(mode = 'json', exclude_none = True)
         else:
             return value
 
@@ -124,11 +127,30 @@ class PositionField(models.JSONField):
         return Position(**json_value)
 
 
+class NeuronIndexLog(models.Model):
+    log_id = models.AutoField(primary_key = True)
+
+    memory_id = models.IntegerField()
+    state = models.CharField(choices = IndexState.choices, default=IndexState.NOT_STARTED)
+    indexed_at = models.DateTimeField(null=True)
+
+    updated_at = models.DateTimeField(auto_now = True)
+    created_at = models.DateTimeField(auto_now_add = True)
+
+    class Meta:
+        db_table = 'neuron_index_logs'
+        indexes = [
+            models.Index(fields = ['memory_id'], name = 'idx_memory_id')
+        ]
+
+
 class Neuron(models.Model):
+    neuron_id = models.AutoField(primary_key = True)
+
     content = models.TextField(null = False)
     embedding = VectorField(dimensions = 1536)
 
-    memory_id = models.CharField(max_length = 100)
+    memory_id = models.IntegerField()
     position = PositionField(null = True)
     embed_model = models.CharField(choices = EmbedModel.choices)
 

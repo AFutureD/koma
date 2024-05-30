@@ -18,6 +18,6 @@ def list_memories(request) -> Result[List[MemoryDTO]]:
 
 
 @router.post('/sync.json', response=Result[None])
-def sync_memories(request) -> Result[None]:# -> JsonResponse | Result:
+def sync_memories(request) -> Result[None]:
     memory_biz_service.sync_memories()
     return Result.succ()

@@ -3,7 +3,7 @@ from typing import List
 from django.db import models
 from pgvector.django import CosineDistance
 
-from .models import Memory, Neuron, MemorySyncLog
+from .models import Memory, Neuron, MemorySyncLog, NeuronIndexLog
 
 MODEL_MANAGER_ATTRIBUTE = 'objects'
 
@@ -31,7 +31,13 @@ class MemorySyncLogManager(models.Manager[MemorySyncLog]):
         # group by biz_id and find the max modified_at
         query = self.filter(biz_id__in = biz_ids).distinct('biz_id').order_by('biz_id', '-biz_modified_at')
         return list(query)
-    
+
+
+class NeuronIndexLogManager(models.Manager[NeuronIndexLog]):
+    def __init__(self):
+        super().__init__()
+        self.contribute_to_class(NeuronIndexLog, MODEL_MANAGER_ATTRIBUTE)
+
 
 class NeuronManager(models.Manager[Neuron]):
 
@@ -42,3 +48,6 @@ class NeuronManager(models.Manager[Neuron]):
     def list_within_distance_on_embedding(self, embedding: List[float], distance: float) -> List[Neuron]:
         query = self.alias(distance = CosineDistance('embedding', embedding)).filter(distance__lt = distance)
         return list(query)
+
+    def delete_by_memory_ids(self, memory_ids: List[int]):
+        self.filter(memory_id__in = memory_ids).delete()

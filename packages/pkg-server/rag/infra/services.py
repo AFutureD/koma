@@ -11,9 +11,9 @@ from loci.domain.models.note import Note
 from loci.infra.fetchers.apple import AppleNotesFetcher
 from loci.infra.renderers.markdown import MarkDown
 
-from ..domain.enum import EmbedModel, MemoryType
-from ..domain.manager import MemoryManager, MemorySyncLogManager, NeuronManager
-from ..domain.models import Memory, MemorySyncLog, Neuron, Position
+from ..domain.enum import EmbedModel, IndexState, MemoryType
+from ..domain.manager import MemoryManager, MemorySyncLogManager, NeuronIndexLogManager, NeuronManager
+from ..domain.models import Memory, MemorySyncLog, Neuron, NeuronIndexLog, Position
 from ..dto.memory import MemoryDTO, NeuronDTO
 
 client = openai.OpenAI()
@@ -37,10 +37,11 @@ class MemorySerivce:
             if note.uuid not in last_modified_map_by_biz_id.keys()
         ]
 
-        to_update_notes = list(filter(
-            lambda note: note.modified_at > last_modified_map_by_biz_id.get(note.uuid),
-            notes
-        ))
+        to_update_notes = [
+            note 
+            for note in notes 
+            if note.uuid in last_modified_map_by_biz_id.keys() and note.modified_at > last_modified_map_by_biz_id.get(note.uuid)
+        ]
         
         to_update_biz_ids = list(map(lambda note: note.uuid, to_update_notes))
         to_update_memories = MemoryManager().list_by_biz_ids(to_update_biz_ids)
@@ -79,10 +80,27 @@ class MemorySerivce:
 
 class NeuronService:
     def index_memories(self,  memories: List[Memory]):
+
+        indexLogs = [
+            NeuronIndexLog(memory_id = memory.memory_id)
+            for memory in memories
+        ]
+        NeuronIndexLogManager().bulk_create(indexLogs)
+
+        memory_ids = [memory.memory_id for memory in memories]
+        NeuronManager().delete_by_memory_ids(memory_ids)
+
         neurons_mapper = map(generate_neurons, memories)
         neurons = list(itertools.chain.from_iterable(neurons_mapper))
 
         NeuronManager().bulk_create(neurons)
+        
+        for indexLog in indexLogs:
+            indexLog.state = IndexState.INDEXED
+            indexLog.indexed_at = datetime.now()
+
+        NeuronIndexLogManager().bulk_update(indexLogs, fields=["state", "indexed_at"], batch_size=20)
+
         return
 
 
@@ -134,7 +152,7 @@ def generate_neurons(memory: Memory) -> List[Neuron]:
         Neuron(
             embedding = data.embedding,
             content = indexable_paragraph[data.index]["content"],
-            memory_id = memory.biz_id,
+            memory_id = memory.memory_id,
             position = Position(paragraph = indexable_paragraph[data.index]["idx"]),
             embed_model = EmbedModel.OPENAI_TEXT_EMBEDDING_3_SMALL
         )

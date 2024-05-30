@@ -19,15 +19,8 @@ from ..dto.memory import MemoryDTO, NeuronDTO
 client = openai.OpenAI()
 
 
-class MemoryBizService:
-
-    def list_all(self) -> List[MemoryDTO]:
-        memories = MemoryManager().list_all()
-        dto = MemoryDTO.from_model_list(memories)
-        return dto
-    
-    def sync_memories(self):
-
+class MemorySerivce:
+    def fetch_modified_memories(self) -> List[Memory]:
         markdown = MarkDown()
         fetcher = AppleNotesFetcher(markdown)
         fetcher.start()
@@ -39,48 +32,71 @@ class MemoryBizService:
 
         last_modified_map_by_biz_id = {log.biz_id: log.biz_modified_at for log in logs}
 
-        callback_min = datetime(1970, 1, 1).astimezone()
+        fallback_modified_time = datetime(1970, 1, 1).astimezone()
         to_update_notes = list(filter(
-            lambda x: x.modified_at > last_modified_map_by_biz_id.get(x.uuid, callback_min),
+            lambda note: note.modified_at > last_modified_map_by_biz_id.get(note.uuid, fallback_modified_time),
             notes
         ))
-
-        if len(to_update_notes) == 0:
-            return
 
         memories = [
             Memory(memory_type = MemoryType.NOTE, data = note, biz_id = note.uuid)
             for note in to_update_notes
         ]
 
-        neurons_mapper = map(generate_neurons, to_update_notes)
-        nonnull_neurons_mapper = [
-            mapper
-            for mapper in neurons_mapper
-            if mapper is not None
-        ]
-        neurons = list(itertools.chain.from_iterable(nonnull_neurons_mapper))
-
+        return memories
+    
+    def save_modified_memories(self, memories: List[Memory]) -> List[Memory]:
+        
         sync_logs = [
             MemorySyncLog(
-                biz_id = note.uuid,
-                biz_modified_at = note.modified_at
+                biz_id = memory.biz_id,
+                biz_modified_at = memory.data.modified_at
             )
-            for note in to_update_notes
+            for memory in memories
         ]
 
         MemoryManager().bulk_create(memories)
         MemorySyncLogManager().bulk_create(sync_logs)
-        NeuronManager().bulk_create(neurons)
 
+        return memories
+
+
+class NeuronService:
+    def index_memories(self,  memories: List[Memory]):
+        neurons_mapper = map(generate_neurons, memories)
+        neurons = list(itertools.chain.from_iterable(neurons_mapper))
+
+        NeuronManager().bulk_create(neurons)
         return
 
+class MemoryBizService:
+    
+    memory_service = MemorySerivce()
+    neuron_service = NeuronService()
 
-def generate_neurons(note: Note) -> List[Neuron]:
+    def list_all(self) -> List[MemoryDTO]:
+        memories = MemoryManager().list_all()
+        dto = MemoryDTO.from_model_list(memories)
+        return dto
+    
+    def sync_memories(self):
+        memories = self.memory_service.fetch_modified_memories()
 
+        if len(memories) == 0:
+            return
+
+        saved_memories = self.memory_service.save_modified_memories(memories)
+        self.neuron_service.index_memories(saved_memories)
+
+        return
+    
+
+def generate_neurons(memory: Memory) -> List[Neuron]:
+    note: Note = memory.data
     paragraph_list = note.content.paragraph_list
     if len(paragraph_list) == 0:
         return []
+    
     # check if represent is not blank
     indexable_paragraph = [
         {"idx":idx, "content": p.represent} 
@@ -103,7 +119,7 @@ def generate_neurons(note: Note) -> List[Neuron]:
         Neuron(
             embedding = data.embedding,
             content = indexable_paragraph[data.index]["content"],
-            memory_id = note.uuid,
+            memory_id = memory.biz_id,
             position = Position(paragraph = indexable_paragraph[data.index]["idx"]),
             embed_model = EmbedModel.OPENAI_TEXT_EMBEDDING_3_SMALL
         )

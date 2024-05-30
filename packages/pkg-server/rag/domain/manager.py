@@ -26,7 +26,7 @@ class MemorySyncLogManager(models.Manager[MemorySyncLog]):
     def list_by_biz_ids(self, biz_ids: List[str]) -> List[MemorySyncLog]:
         query = self.filter(biz_id__in = biz_ids)
         return list(query)
-
+    
 
 class NeuronManager(models.Manager[Neuron]):
 

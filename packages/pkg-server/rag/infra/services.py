@@ -1,5 +1,3 @@
-
-
 import itertools
 from datetime import datetime
 from typing import List
@@ -25,8 +23,8 @@ class MemorySerivce:
         fetcher = AppleNotesFetcher(markdown)
         fetcher.start()
 
-        notes = fetcher.notes[0:10]
-        uuids = list(map(lambda x: x.uuid, notes))
+        notes = fetcher.notes
+        uuids = [note.uuid for note in notes]
 
         logs = MemorySyncLogManager().list_by_biz_ids(uuids)
         last_modified_map_by_biz_id = {log.biz_id: log.biz_modified_at for log in logs}

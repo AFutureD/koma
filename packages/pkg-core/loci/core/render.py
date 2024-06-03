@@ -8,7 +8,7 @@ class BaseRenderer(ABC):
 
     @abstractmethod
     def render(self, renderable: RenderAble) -> str:
-        pass
+        ...
 
 
 class RenderAble(BaseModel):
@@ -18,7 +18,7 @@ class RenderAble(BaseModel):
 
     def render(self, renderer: BaseRenderer):
         if self.rendered:
-            return self.represent
+            return
 
         for prop in self.__dict__.values():
             if isinstance(prop, RenderAble):
@@ -33,8 +33,7 @@ class RenderAble(BaseModel):
                         item.render(renderer)
 
         self.rendered = True
-        if isinstance(self, RenderAble):
-            represent = renderer.render(self)
-            self.represent = represent
-        else:
-            raise RuntimeError(f"Unknown type {type(self)}")
+        assert isinstance(self, RenderAble), f"{self.__class__.__qualname__} must be RenderAble"
+
+        represent = renderer.render(self)
+        self.represent = represent

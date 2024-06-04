@@ -4,6 +4,8 @@ import zlib
 from datetime import datetime, timezone
 from typing import MutableSequence, override, Sequence, List, Dict
 from pathlib import Path
+import logging
+from google.protobuf import text_format
 
 from ...domain import Note, NoteContent, NoteContentParagraph, NoteContentLine, NoteAttachment
 from ...domain import TextAttribute, ParagraphStyle, FontStyle, ParagraphStyleType, CheckInfo, AttributeText
@@ -11,6 +13,10 @@ from ...infra.helper import AppleNotesTableConstructor
 from ...protobuf import NoteStoreProto, Checklist, AttributeRun, MergableDataProto, ParagraphStyle_pb2
 from .base import BaseFetcher
 from ...infra.renderers import Renderer
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 ALL_NOTES_QUERY = """
 SELECT
@@ -141,10 +147,9 @@ class AppleNotesFetcher(BaseFetcher):
 
     @override
     def finish(self):
-        # for note in self.notes:
-        #     # print(memory)
-        #     print(note.represent)
-        pass
+        for note in self.notes:
+            logger.info(f"{note.__repr__()}")
+
 
     def list_account_list(self):
         account_rows = []
@@ -243,7 +248,7 @@ class AppleNotesFetcher(BaseFetcher):
             z_pk, uuid, url_scheme, title, folder, modified_at, preview, account, locked, pinned, gzip_content
         ) in note_rows:
 
-            # if uuid != 'A2A24A7A-8C56-4904-AE68-6EAF466B1178':
+            # if uuid != '43EBA8F2-6FEA-470B-B943-4314448A0C6B':
             #     continue
 
             utc_modified_at = datetime.strptime(modified_at, "%Y-%m-%d %H:%M:%S")
@@ -263,10 +268,7 @@ class AppleNotesFetcher(BaseFetcher):
         store.ParseFromString(uncompressed_data)
 
         note_raw = store.document.note
-        attribute_text_list = self.build_attribute_text(note_raw.note_text, note_raw.attribute_run)
-
-        # for attribute_text in attribute_text_list:
-        #     print(attribute_text)
+        attribute_text_list: Sequence[AttributeText] = self.build_attribute_text(note_raw.note_text, note_raw.attribute_run)
 
         doc_paragraph_list = self.build_paragraph_list(attribute_text_list)
 
@@ -284,8 +286,10 @@ class AppleNotesFetcher(BaseFetcher):
             length = attribute_run.length * 2  # utf-16 length
 
             text = utf16_text[cur_idx: cur_idx + length].decode("utf-16le")
-            # print(text.__repr__(), attribute_run)
             attribute = self.build_note_attribute(attribute_run)
+            
+            # logger.debug(f"attribute before: ({text_format.MessageToString(attribute_run, as_one_line=True)})")
+            # logger.debug(f"attribute after : {attribute.__repr__()}")
 
             # notice: we convert apple note length to utf-8 length
             node = AttributeText(start_index = cur_idx, length = len(text), text = text, attribute = attribute)
@@ -385,17 +389,21 @@ class AppleNotesFetcher(BaseFetcher):
             line_idx += 1
             one_line_stack = []
 
+        # for line in lines:
+        #     logger.debug(f"{line.__repr__()}")
+
         # build paragraph
         paragraphs: List[NoteContentParagraph] = []
 
         paragraph_stack = []
         previous_line = None
-        for line in lines:
+        for idx, line in enumerate(lines):
             paragraph_stack.append(line)
 
             if (
                 not (previous_line is not None and not line.is_same_paragraph(previous_line))
                 and not line.is_paragraph_breaker()
+                and idx != len(lines) - 1
             ):
                 previous_line = line
             else:
@@ -404,5 +412,8 @@ class AppleNotesFetcher(BaseFetcher):
                 paragraphs.append(paragraph)
                 paragraph_stack = []
                 previous_line = None
+
+        # for paragraph in paragraphs:
+        #     logger.debug(f"{paragraph.__repr__()}")
 
         return paragraphs

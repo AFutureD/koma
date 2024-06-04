@@ -25,8 +25,10 @@ class BaseFetcher:
         raise NotImplementedError
 
     def start_render(self):
-        for memory in self.notes:
-            self.renderer.start_pipline(memory)
+        for note in self.notes:
+            self.renderer.pre_render(note)
+            note.render(self.renderer)
+            self.renderer.post_render(note)
 
     def finish(self):
         pass

@@ -8,6 +8,12 @@ from ...core import RenderAble, BaseRenderer
 
 class Renderer(BaseRenderer, metaclass=ABCMeta):
 
+    def pre_render(self, render_able: RenderAble):
+        pass
+
+    def post_render(self, render_able: RenderAble):
+        pass
+
     def render_attachment_link(self, attachment: NoteAttachmentLink) -> str:
         return ""
 
@@ -28,23 +34,23 @@ class Renderer(BaseRenderer, metaclass=ABCMeta):
 
     @abstractmethod
     def render_attribute_text(self, attribute: AttributeText) -> str:
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     def render_line(self, line: NoteContentLine) -> str:
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     def render_paragraph(self, paragraph: NoteContentParagraph) -> str:
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     def render_content(self, content: NoteContent) -> str:
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     def render_memory(self, memory: Note) -> str:
-        raise NotImplementedError
+        ...
 
     def render(self, render_able: RenderAble):
         if isinstance(render_able, Note):
@@ -71,7 +77,4 @@ class Renderer(BaseRenderer, metaclass=ABCMeta):
             return self.render_attachment_gallery(render_able)
         else:
             raise RuntimeError(f"Unknown type {type(self)}")
-
-    def start_pipline(self, memory: RenderAble):
-        memory.render(self)
 

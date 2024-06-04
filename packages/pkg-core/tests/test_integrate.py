@@ -10,5 +10,3 @@ class IntegrateTests(unittest.TestCase):
         markdown = MarkDown()
         fetcher = AppleNotesFetcher(markdown)
         fetcher.start()
-
-        print(fetcher.notes)

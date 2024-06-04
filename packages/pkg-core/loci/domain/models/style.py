@@ -10,7 +10,6 @@ from ...core import RenderAble, BaseRenderer
 
 
 class ParagraphStyleType(IntEnum):
-    Plain = -1
     Title = 0
     Heading = 1
     Subheading = 2
@@ -22,7 +21,11 @@ class ParagraphStyleType(IntEnum):
     TodoList = 103
 
     def group_identifier(self):
-        return self.value if self.value < 100 else 100
+        return self.value if not self.should_newline else 100
+
+    @property
+    def should_newline(self):
+        return self.value >= 100
 
 
 class FontStyle(IntEnum):
@@ -52,22 +55,24 @@ class ParagraphStyle(BaseModel):
     check_info: None | CheckInfo = None
     quote: bool = False
 
-    def is_same_paragraph(self, other: ParagraphStyle):
+    def is_same_block(self, previous: ParagraphStyle):
 
         # two lines are to-do list
-        if self.check_info is not None and other.check_info is not None:
+        if self.check_info is not None and previous.check_info is not None:
             return True
 
         # two lines are quote
-        if self.quote and self.quote:
-            return True
+        if self.quote or previous.quote:
+            return self.quote and previous.quote
 
-        if self.style_type is None and other.style_type is None:
+        if self.style_type is None or previous.style_type is None:
             return True
-        elif self.style_type is not None and other.style_type is None:
-            return self.style_type.group_identifier() >= ParagraphStyleType.DotList.group_identifier()
-        elif self.style_type is not None and other.style_type is not None:
-            return self.style_type.group_identifier() <= other.style_type.group_identifier()
+        # elif self.style_type is not None and previous.style_type is None:
+        #     return True
+        # elif self.style_type is None and previous.style_type is not None:
+        #     return True
+        elif self.style_type is not None and previous.style_type is not None:
+            return self.style_type.group_identifier() >= previous.style_type.group_identifier()
         else:
             return False
 
@@ -79,14 +84,14 @@ class ParagraphStyle(BaseModel):
 
 
 class TextAttribute(BaseModel):
-    paragraph_style: None | ParagraphStyle
+    paragraph_style: None | ParagraphStyle = None
 
-    font_style: None | FontStyle
-    font_name: None | str  # useless for now
-    underlined: None | bool
-    strike_through: None | bool
-    link: None | str
-    attachment: None | NoteAttachment
+    font_style: None | FontStyle = None
+    font_name: None | str = None  # useless for now
+    underlined: None | bool = None
+    strike_through: None | bool = None
+    link: None | str = None
+    attachment: None | NoteAttachment = None
 
     def __hash__(self):
         return hash(
@@ -101,7 +106,7 @@ class TextAttribute(BaseModel):
         return self.__repr__()
 
     def __repr__(self):
-        return f"NoteAttribute(paragraph: {self.paragraph_style}, font_style: {self.font_style}, underlined: {self.underlined}, strike: {self.strike_through}, link: {self.link.__repr__()}, attachment: {self.attachment})"
+        return f"NoteAttribute({self.model_dump(exclude_none=True)})"
 
     def inline_identifier(self):
         return self.__hash__()
@@ -126,15 +131,7 @@ class AttributeText(RenderAble, BaseModel):
     length: int
     text: str
 
-    # __length_utf_16: int
-    # __text_utf_16: bytes
     attribute: TextAttribute
-
-    # @classmethod
-    # def of(cls, start_index: int, length: int, text: str, attribute: TextAttribute):
-    #     text_utf_16 = text.encode("utf-16le")
-    #
-    #     return AttributeText(start_index= start_index, length = length, text = text, attribute = attribute)
 
     def __str__(self):
         return self.__repr__()

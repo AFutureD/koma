@@ -1,10 +1,18 @@
+import logging
+
+from loci.core.render import RenderAble
 from ..renderers.base import Renderer
 from ...domain import Note, NoteContent, NoteContentParagraph, NoteContentLine, AttributeText, NoteAttachmentLink, NoteAttachmentMedia, NoteAttachmentTag, NoteAttachmentDraw, NoteAttachmentTable, NoteAttachmentGallery, ParagraphStyleType, FontStyle
+
+logger = logging.getLogger(__name__)
 
 
 class MarkDown(Renderer):
 
     media_root_path: str
+
+    def  post_render(self, render_able: RenderAble):
+        logger.debug(f"Rendered: {render_able.represent.__repr__()}")
 
     def render_attachment_link(self, attachment: NoteAttachmentLink) -> str:
         return f"[{attachment.text}]({attachment.url})"
@@ -145,6 +153,7 @@ class MarkDown(Renderer):
             else:
                 markdown_text += markdown_line
 
+        logger.debug(f"paragraph: {markdown_text.__repr__()}")
         return markdown_text
 
     def render_content(self, content: NoteContent) -> str:

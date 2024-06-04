@@ -20,3 +20,7 @@ build-backend = "pdm.backend"
 
 [project.scripts]
 qa = "q:cli"
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"

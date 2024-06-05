@@ -1,17 +1,16 @@
 import pytest
 import unittest
-from unittest.mock import patch
-from loci.core import BaseRenderer, RenderAble
+from loci.core import TextRenderer, RenderAble
 
 
 class RenderTests(unittest.TestCase):
 
     def test_base_render_not_implement(self):
         with pytest.raises(TypeError):
-            _ = BaseRenderer()
+            _ = TextRenderer()
 
     def test_base_render_implement(self):
-        class TestRenderer(BaseRenderer):
+        class TestRenderer(TextRenderer):
             def render(self, renderable: RenderAble):
                 return "fake result"
 
@@ -20,7 +19,7 @@ class RenderTests(unittest.TestCase):
         assert result == "fake result"
     
     def test_render_able(self):
-        class TestRenderer(BaseRenderer):
+        class TestRenderer(TextRenderer):
             def render(self, renderable: RenderAble):
                 return "fake result"
 
@@ -43,7 +42,7 @@ class RenderTests(unittest.TestCase):
             list_inner: list[TestInnerModel] = [TestInnerModel(), TestInnerModel()]
             dict_inner: dict[str, TestInnerModel] = {"a": TestInnerModel(), "b": TestInnerModel()}
 
-        class TestRenderer(BaseRenderer):
+        class TestRenderer(TextRenderer):
             def render(self, renderable: RenderAble):
                 if isinstance(renderable, TestInnerModel):
                     return "inner result"
@@ -56,12 +55,12 @@ class RenderTests(unittest.TestCase):
 
         model.render(render)
         
-        assert model.represent == "outer result"
+        assert model.rendered_result == "outer result"
         
-        assert model.inner.represent == "inner result"
+        assert model.inner.rendered_result == "inner result"
         
         for value in model.list_inner:
-            assert value.represent == "inner result"
+            assert value.rendered_result == "inner result"
 
         for value in model.dict_inner.values():
-            assert value.represent == "inner result"
+            assert value.rendered_result == "inner result"

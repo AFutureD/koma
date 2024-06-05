@@ -6,10 +6,10 @@ from typing import List, Dict, Protocol
 from pydantic import BaseModel, ConfigDict
 from pydantic._internal._model_construction import ModelMetaclass
 
-from ...core import RenderAble
+from ...core import RenderAble, Model
 
 
-class NoteAttachmentTableCell(BaseModel):
+class NoteAttachmentTableCell(Model):
     column: int
     row: int
     text: str
@@ -45,7 +45,7 @@ class NoteAttachmentMetaClass(NoteAttachmentFactory):
         return type.__call__(cls, *args, **kwargs)
 
 
-class NoteAttachment(RenderAble, BaseModel, metaclass=NoteAttachmentFactory):
+class NoteAttachment(RenderAble, Model, metaclass=NoteAttachmentFactory):
 
     type_uti: str
     z_pk: int

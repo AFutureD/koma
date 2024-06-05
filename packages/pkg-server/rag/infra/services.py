@@ -130,9 +130,9 @@ def generate_neurons(memory: Memory) -> List[Neuron]:
     
     # check if represent is not blank
     indexable_paragraph = [
-        {"idx":idx, "content": p.represent} 
+        {"idx":idx, "content": p.rendered_result} 
         for idx, p in enumerate(paragraph_list) 
-        if p.represent is not None and not p.represent.isspace()
+        if p.rendered_result is not None and not p.rendered_result.isspace()
     ]
 
     if len(indexable_paragraph) == 0:

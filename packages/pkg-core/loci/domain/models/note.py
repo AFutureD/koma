@@ -7,10 +7,10 @@ from typing import Sequence
 from pydantic import BaseModel
 
 from .style import ParagraphStyle, AttributeText
-from ...core import RenderAble
+from ...core import RenderAble, Model
 
 
-class NoteContentLine(RenderAble, BaseModel):
+class NoteContentLine(RenderAble, Model):
     idx: int
     elements: Sequence[AttributeText]
 
@@ -80,7 +80,7 @@ class NoteContentLine(RenderAble, BaseModel):
         return self.plain_text == "\n"
 
 
-class NoteContentParagraph(RenderAble, BaseModel):
+class NoteContentParagraph(RenderAble, Model):
     lines: Sequence[NoteContentLine]
 
     attribute: None | ParagraphStyle
@@ -89,13 +89,13 @@ class NoteContentParagraph(RenderAble, BaseModel):
         return f"{self.__class__.__name__}({self.model_dump(exclude_none=True)})"
 
 
-class NoteContent(RenderAble, BaseModel):
+class NoteContent(RenderAble, Model):
     plan_text: str
     attributed_text: Sequence[AttributeText]
     paragraph_list: Sequence[NoteContentParagraph]
 
 
-class Note(RenderAble, BaseModel):
+class Note(RenderAble, Model):
     z_pk: int
     uuid: str
     navigation_link: str

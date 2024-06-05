@@ -1,5 +1,6 @@
-from .render import RenderAble, BaseRenderer
+from .render import RenderAble, TextRenderer
+from .model import Model
 
 __all__ = [
-    'BaseRenderer', 'RenderAble'
+    'Model', 'TextRenderer', 'RenderAble'
 ]

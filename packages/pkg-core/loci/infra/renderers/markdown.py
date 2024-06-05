@@ -11,8 +11,9 @@ class MarkDown(Renderer):
 
     media_root_path: str
 
-    def  post_render(self, render_able: RenderAble):
-        logger.debug(f"Rendered: {render_able.represent.__repr__()}")
+    def post_render(self, render_able: RenderAble):
+        # logger.debug(f"Rendered: {render_able.represent.__repr__()}")
+        pass
 
     def render_attachment_link(self, attachment: NoteAttachmentLink) -> str:
         return f"[{attachment.text}]({attachment.url})"
@@ -49,7 +50,7 @@ class MarkDown(Renderer):
             return attribute_text.text
 
         if attribute.attachment:
-            represent = attribute.attachment.represent
+            represent = attribute.attachment.rendered_result
             return represent if represent is not None else ""
 
         markdown_text = attribute_text.text
@@ -74,9 +75,9 @@ class MarkDown(Renderer):
     def render_line(self, line: NoteContentLine) -> str:
 
         markdown_text = "".join([
-            ele.represent
+            ele.rendered_result
             for ele in line.elements
-            if ele.represent is not None
+            if ele.rendered_result is not None
         ])
 
         return markdown_text
@@ -85,9 +86,9 @@ class MarkDown(Renderer):
         attribute = paragraph.attribute
 
         markdown_text = "".join([
-            line.represent
+            line.rendered_result
             for line in paragraph.lines
-            if line.represent is not None
+            if line.rendered_result is not None
         ])
 
         if attribute is None:
@@ -104,7 +105,7 @@ class MarkDown(Renderer):
             # if line.is_paragraph_breaker():
             #     continue
 
-            markdown_line = line.represent
+            markdown_line = line.rendered_result
             line_attribute = line.attribute
 
             if markdown_line is None:
@@ -158,12 +159,11 @@ class MarkDown(Renderer):
 
     def render_content(self, content: NoteContent) -> str:
         return "".join([
-            paragraph.represent
+            paragraph.rendered_result
             for paragraph in content.paragraph_list
-            if paragraph.represent is not None
+            if paragraph.rendered_result is not None
         ])
 
     def render_memory(self, memory: Note) -> str:
-        re = memory.content.represent
-        # print(re)
+        re = memory.content.rendered_result
         return re if re is not None else ""

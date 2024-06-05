@@ -16,7 +16,7 @@ class BaseFetcher:
         atexit.register(self.release)
 
     def shutdown(self):
-        raise NotImplementedError
+        pass
 
     def release(self):
         self.shutdown()

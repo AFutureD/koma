@@ -8,7 +8,8 @@
       "**/.pdm-build": true,
       "**/.venv": true,
       "**/.idea": true,
-      "**/.ruff_cache": true
+      "**/.ruff_cache": true,
+      "**/.pytest_cache": true,
     },
     "python.analysis.inlayHints.functionReturnTypes": true,
     "python.analysis.inlayHints.variableTypes": true,

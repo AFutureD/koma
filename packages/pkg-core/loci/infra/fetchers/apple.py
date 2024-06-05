@@ -1,18 +1,26 @@
 import itertools
+import logging
 import sqlite3
 import zlib
 from datetime import datetime, timezone
-from typing import MutableSequence, override, Sequence, List, Dict
 from pathlib import Path
-import logging
-from google.protobuf import text_format
+from typing import Dict, List, MutableSequence, Sequence, override
 
-from ...domain import Note, NoteContent, NoteContentParagraph, NoteContentLine, NoteAttachment
-from ...domain import TextAttribute, ParagraphStyle, FontStyle, ParagraphStyleType, CheckInfo, AttributeText
-from ...infra.helper import AppleNotesTableConstructor
-from ...protobuf import NoteStoreProto, Checklist, AttributeRun, MergableDataProto, ParagraphStyle_pb2
-from .base import BaseFetcher
+
+from ...domain import (
+    AttributeText,
+    Note,
+    NoteAttachment,
+    NoteContent,
+)
+from ...infra.helper import AppleNotesTableConstructor, build_note_attribute, build_paragraph_list
 from ...infra.renderers import Renderer
+from ...protobuf import (
+    AttributeRun,
+    MergableDataProto,
+    NoteStoreProto,
+)
+from .base import BaseFetcher
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -124,7 +132,7 @@ class AppleNotesFetcher(BaseFetcher):
     connection: sqlite3.Connection
 
     attachments: List[NoteAttachment] = []
-    attachment_by_identify_map: Dict[str, NoteAttachment] = {}
+    attachment_map_by_identifier: Dict[str, NoteAttachment] = {}
 
     accounts: List[AppleNotesAccount] = []
     account_by_pk_map: Dict[int, AppleNotesAccount] = {}
@@ -212,7 +220,7 @@ class AppleNotesFetcher(BaseFetcher):
             attachments.append(attachment)
 
         self.attachments = attachments
-        self.attachment_by_identify_map = {attachment.identifier: attachment for attachment in attachments}
+        self.attachment_map_by_identifier = {attachment.identifier: attachment for attachment in attachments}
 
     # Build attachment hierarchy
     # for now, we only care about `gallery` type
@@ -268,9 +276,9 @@ class AppleNotesFetcher(BaseFetcher):
         store.ParseFromString(uncompressed_data)
 
         note_raw = store.document.note
-        attribute_text_list: Sequence[AttributeText] = self.build_attribute_text(note_raw.note_text, note_raw.attribute_run)
+        attribute_text_list = self.build_attribute_text(note_raw.note_text, note_raw.attribute_run)
 
-        doc_paragraph_list = self.build_paragraph_list(attribute_text_list)
+        doc_paragraph_list = build_paragraph_list(attribute_text_list)
 
         content = NoteContent(plan_text = note_raw.note_text, attributed_text = attribute_text_list, paragraph_list = doc_paragraph_list)
         return content
@@ -285,11 +293,16 @@ class AppleNotesFetcher(BaseFetcher):
         for attribute_run in attribute_run_list:
             length = attribute_run.length * 2  # utf-16 length
 
+            # text and attribute
             text = utf16_text[cur_idx: cur_idx + length].decode("utf-16le")
-            attribute = self.build_note_attribute(attribute_run)
+            attribute = build_note_attribute(attribute_run)
             
             # logger.debug(f"attribute before: ({text_format.MessageToString(attribute_run, as_one_line=True)})")
             # logger.debug(f"attribute after : {attribute.__repr__()}")
+
+            # attachment
+            if identifier := attribute.attachment_identifier:
+                attribute.attachment = self.attachment_map_by_identifier.get(identifier)
 
             # notice: we convert apple note length to utf-8 length
             node = AttributeText(start_index = cur_idx, length = len(text), text = text, attribute = attribute)
@@ -299,121 +312,4 @@ class AppleNotesFetcher(BaseFetcher):
 
         assert cur_idx == len(utf16_text)
         return struct_list
-
-    def build_note_paragraph_style(self, paragraph_style: ParagraphStyle_pb2) -> ParagraphStyle:
-        style_type: None | ParagraphStyleType = None
-        indent_amount = 0
-        check_info: None | CheckInfo = None
-        is_quote: bool = False
-
-        if paragraph_style.HasField("checklist"):
-            check_info = self.build_check(paragraph_style.checklist)
-        if paragraph_style.HasField("style_type"):
-            style_type = ParagraphStyleType(paragraph_style.style_type)
-        if paragraph_style.HasField("indent_amount"):
-            indent_amount = paragraph_style.indent_amount
-        if paragraph_style.HasField("block_quote"):
-            is_quote = paragraph_style.block_quote == 1
-
-        return ParagraphStyle(style_type = style_type, indent_level = indent_amount, check_info = check_info, quote = is_quote)
-
-    def build_note_attribute(self, attribute_run: AttributeRun) -> TextAttribute:
-
-        paragraph_style: None | ParagraphStyle = None
-        font_style: None | FontStyle = None
-        font: None | str = None
-        underlined: None | bool = None
-        strike_through: None | bool = None
-        attachment: None | NoteAttachment = None
-        link: None | str = None
-
-        if attribute_run.HasField("paragraph_style"):
-            paragraph_style = self.build_note_paragraph_style(attribute_run.paragraph_style)
-        if attribute_run.HasField("font"):
-            font = attribute_run.font.font_name
-        if attribute_run.HasField("font_weight"):
-            font_style = FontStyle(attribute_run.font_weight)
-        if attribute_run.HasField("underlined"):
-            underlined = attribute_run.underlined == 1
-        if attribute_run.HasField("strikethrough"):
-            strike_through = attribute_run.strikethrough == 1
-        if attribute_run.HasField("attachment_info"):
-            info = attribute_run.attachment_info
-            attachment = self.attachment_by_identify_map.get(info.attachment_identifier)
-        if attribute_run.HasField("link"):
-            link = attribute_run.link
-
-        return TextAttribute(
-            paragraph_style = paragraph_style,
-            font_style = font_style,
-            font_name = font,
-            underlined = underlined,
-            strike_through = strike_through,
-            link = link,
-            attachment = attachment,
-        )
-
-    @classmethod
-    def build_check(cls, check: Checklist) -> None | CheckInfo:
-        if check.uuid == b'':
-            return None
-        return CheckInfo(done = (check.done == 1), uuid = check.uuid.hex())
-
-    @staticmethod
-    def build_paragraph_list(attribute_text_list: Sequence[AttributeText]) -> Sequence[NoteContentParagraph]:
-        """
-        build content structure from attribute texts.
-        1. build lines
-        2. build paragraphs
-        """
-
-        split_list = [attribute.splitlines() for attribute in attribute_text_list]
-        flatten_list = itertools.chain.from_iterable(split_list)
-
-        # build a line.
-        line_idx = 0
-        lines: List[NoteContentLine] = []
-
-        one_line_stack: List[AttributeText] = []
-        for text_attribute in flatten_list:
-            if text_attribute is None:
-                continue
-            one_line_stack.append(text_attribute)
-            if "\n" not in text_attribute.text:
-                continue
-
-            # building
-            line = NoteContentLine.of(idx = line_idx, elements = one_line_stack)
-
-            lines.append(line)
-            line_idx += 1
-            one_line_stack = []
-
-        # for line in lines:
-        #     logger.debug(f"{line.__repr__()}")
-
-        # build paragraph
-        paragraphs: List[NoteContentParagraph] = []
-
-        paragraph_stack = []
-        previous_line = None
-        for idx, line in enumerate(lines):
-            paragraph_stack.append(line)
-
-            if (
-                not (previous_line is not None and not line.is_same_paragraph(previous_line))
-                and not line.is_paragraph_breaker()
-                and idx != len(lines) - 1
-            ):
-                previous_line = line
-            else:
-                attribute: ParagraphStyle | None = None if len(paragraph_stack) == 0 else paragraph_stack[0].attribute
-                paragraph = NoteContentParagraph(attribute = attribute, lines = paragraph_stack)
-                paragraphs.append(paragraph)
-                paragraph_stack = []
-                previous_line = None
-
-        # for paragraph in paragraphs:
-        #     logger.debug(f"{paragraph.__repr__()}")
-
-        return paragraphs
+    

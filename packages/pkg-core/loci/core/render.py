@@ -1,22 +1,25 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
+from pydantic import Field
 
-from pydantic import BaseModel
+from .model import Model
 
 
-class BaseRenderer(ABC):
+class TextRenderer(ABC):
+    META_KEY = "TEXT_RENDER_RESULT"
 
     @abstractmethod
     def render(self, renderable: RenderAble) -> str:
         ...
 
 
-class RenderAble(BaseModel):
-    rendered: bool = False
+class RenderAble(Model):
 
-    represent: str | None = None
+    rendered: bool = Field(default=False, exclude=True)
+    rendered_result: str | None = Field(default=None, exclude=True)
 
-    def render(self, renderer: BaseRenderer):
+    def render(self, renderer: TextRenderer):
         if self.rendered:
             return
 
@@ -35,5 +38,7 @@ class RenderAble(BaseModel):
         self.rendered = True
         assert isinstance(self, RenderAble), f"{self.__class__.__qualname__} must be RenderAble"
 
-        represent = renderer.render(self)
-        self.represent = represent
+        render_result = renderer.render(self)
+        
+        self.metadata[renderer.META_KEY] = render_result
+        self.rendered_result = render_result

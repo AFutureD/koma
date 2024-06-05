@@ -6,7 +6,7 @@ from typing import Sequence
 from pydantic import BaseModel
 
 from .attachment import NoteAttachment
-from ...core import RenderAble, BaseRenderer
+from ...core import RenderAble, TextRenderer, Model
 
 
 class ParagraphStyleType(IntEnum):
@@ -35,7 +35,7 @@ class FontStyle(IntEnum):
     Bold_Italic = 3
 
 
-class CheckInfo(BaseModel):
+class CheckInfo(Model):
     done: bool
     uuid: str
 
@@ -49,7 +49,7 @@ class CheckInfo(BaseModel):
         return "CheckInfo(done: {}, uuid: {})".format(self.done, self.uuid)
 
 
-class ParagraphStyle(BaseModel):
+class ParagraphStyle(Model):
     style_type: None | ParagraphStyleType = None
     indent_level: int = 0
     check_info: None | CheckInfo = None
@@ -83,7 +83,7 @@ class ParagraphStyle(BaseModel):
         return f"DocParagraphStyle(style_type: {self.style_type}, indent_level: {self.indent_level}, check_info: {self.check_info}, quote: {self.quote})"
 
 
-class TextAttribute(BaseModel):
+class TextAttribute(Model):
     paragraph_style: None | ParagraphStyle = None
 
     font_style: None | FontStyle = None
@@ -91,6 +91,7 @@ class TextAttribute(BaseModel):
     underlined: None | bool = None
     strike_through: None | bool = None
     link: None | str = None
+    attachment_identifier: None | str = None
     attachment: None | NoteAttachment = None
 
     def __hash__(self):
@@ -126,7 +127,7 @@ class TextAttribute(BaseModel):
         )
 
 
-class AttributeText(RenderAble, BaseModel):
+class AttributeText(RenderAble, Model):
     start_index: int
     length: int
     text: str
@@ -141,7 +142,7 @@ class AttributeText(RenderAble, BaseModel):
             self.text.__repr__(), self.start_index, self.length, self.attribute
         )
 
-    def render(self, renderer: BaseRenderer):
+    def render(self, renderer: TextRenderer):
         if self.attribute and self.attribute.attachment:
             self.attribute.attachment.render(renderer)
 

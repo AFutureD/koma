@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 from loci.core.render import RenderAble
 from ..renderers.base import Renderer
@@ -8,8 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 class MarkDown(Renderer):
-
-    media_root_path: str
 
     def post_render(self, render_able: RenderAble):
         # logger.debug(f"Rendered: {render_able.represent.__repr__()}")
@@ -24,11 +23,11 @@ class MarkDown(Renderer):
         if text is None and media_path is not None:
             return ""
         elif text is not None and media_path is None:
-            return f"[{text}]()"
+            return f"![{text}]()"
         elif text is None and media_path is not None:
-            return f"[]({media_path})"
+            return f"![]({media_path})"
         else:
-            return f"[{text}]({media_path})"
+            return f"![{text}]({media_path})"
 
     def render_attachment_tag(self, attachment: NoteAttachmentTag) -> str:
         return attachment.text if attachment.text is not None else ""
@@ -38,9 +37,11 @@ class MarkDown(Renderer):
         return f"[{attachment.text}]({media_path})"
 
     def render_attachment_table(self, attribute: NoteAttachmentTable) -> str:
+        # TODO: Implement table rendering
         return ""
 
     def render_attachment_gallery(self, attribute: NoteAttachmentGallery) -> str:
+        # TODO: Implement gallery rendering
         return ""
 
     def render_attribute_text(self, attribute_text: AttributeText) -> str:

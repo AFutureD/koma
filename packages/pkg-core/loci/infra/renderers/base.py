@@ -3,10 +3,10 @@ from abc import ABCMeta, abstractmethod
 
 # if TYPE_CHECKING:
 from ...domain import Note, NoteContent, NoteContentParagraph, NoteContentLine, AttributeText, NoteAttachmentLink, NoteAttachmentMedia, NoteAttachmentTag, NoteAttachmentDraw, NoteAttachmentTable, NoteAttachmentGallery
-from ...core import RenderAble, TextRenderer
+from ...core import RenderAble, TextRenderer, Model
 
 
-class Renderer(TextRenderer, metaclass=ABCMeta):
+class Renderer(TextRenderer, Model, metaclass=ABCMeta):
 
     def pre_render(self, render_able: RenderAble):
         pass

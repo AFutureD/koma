@@ -126,7 +126,6 @@ class StyleTests(unittest.TestCase):
         assert empty.is_same_block(empty)
 
     def test_check_info_is_same_paragraph(self):
-        empty = ParagraphStyle(check_info=None)
         check = ParagraphStyle(check_info=CheckInfo(done=False, uuid="uuid"))
 
         assert check.is_same_block(check)

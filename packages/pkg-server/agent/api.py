@@ -1,11 +1,11 @@
 from ninja import NinjaAPI
 import traceback
+import logging
+
 
 api = NinjaAPI(servers = [{"url": "https://studio.afuture.me"}])
 
 api.add_router("/rag", "rag.routers.router")
-
-import logging
 
 logger = logging.getLogger(__name__)
 

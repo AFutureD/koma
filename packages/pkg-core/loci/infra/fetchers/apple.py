@@ -12,8 +12,9 @@ from ...domain import (
     Note,
     NoteAttachment,
     NoteContent,
+    NoteContentLine
 )
-from ...infra.helper import AppleNotesTableConstructor, build_note_attribute, build_paragraph_list
+from ...infra.helper import AppleNotesTableConstructor, build_note_attribute, build_paragraph_list, build_content_lines
 from ...infra.renderers import Renderer
 from ...protobuf import (
     AttributeRun,
@@ -228,10 +229,6 @@ class AppleNotesFetcher(BaseFetcher):
     #     └─ image
     #         └─ media <- build this by sql join
     def build_attachment_hierarchy(self):
-        # grouped_by_note_pk = itertools.groupby(self.attachmenets, key=lambda x: x.note_pk)
-        # note_pk_to_attachments_map = {k: list(v) for k, v in grouped_by_note_pk}
-        #
-        # for note_pk, note_attachments in note_pk_to_attachments_map.items():
 
         grouped_by_parent_attachment_pk = itertools.groupby(self.attachments, key=lambda x: x.parent_pk)
         parent_pk_to_attachments_map = {k: list(v) for k, v in grouped_by_parent_attachment_pk if k is not None}
@@ -278,7 +275,8 @@ class AppleNotesFetcher(BaseFetcher):
         note_raw = store.document.note
         attribute_text_list = self.build_attribute_text(note_raw.note_text, note_raw.attribute_run)
 
-        doc_paragraph_list = build_paragraph_list(attribute_text_list)
+        doc_content_lines: List[NoteContentLine] = build_content_lines(attribute_text_list)
+        doc_paragraph_list = build_paragraph_list(doc_content_lines)
 
         content = NoteContent(plan_text = note_raw.note_text, attributed_text = attribute_text_list, paragraph_list = doc_paragraph_list)
         return content

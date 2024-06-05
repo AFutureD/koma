@@ -89,16 +89,14 @@ class NoteAttachmentMedia(NoteAttachment, metaclass=NoteAttachmentMetaClass):
     file_uuid: str
     file_name: str
 
-    def get_data_path(self) -> None | str:
-        if self.media_root_path is None:
-            return ""
-
-        root = Path(self.media_root_path)
+    def get_data_path(self) -> str:
+        
         if self.generation is None:
-            data_path = root / "Media" / self.file_uuid / self.file_name
+            data_path = f"Media/{self.file_uuid}/{self.file_name}"
         else:
-            data_path = root / "Media" / self.file_uuid / self.generation / self.file_name
-        return str(data_path.absolute())
+            data_path = f"Media/{self.file_uuid}/{self.generation}/{self.file_name}"
+
+        return f"{self.media_root_path}/{data_path}"
 
 
 class NoteAttachmentDraw(NoteAttachment, metaclass=NoteAttachmentMetaClass):
@@ -106,13 +104,13 @@ class NoteAttachmentDraw(NoteAttachment, metaclass=NoteAttachmentMetaClass):
     media_root_path: str
 
     def get_data_path(self) -> str:
-        root = Path(self.media_root_path)
 
         if self.generation is None:
-            data_path = root / "FallbackImages" / "{}.jpg".format(self.identifier)
+            data_path = f"FallbackImages/{self.identifier}.jpg"
         else:
-            data_path = root / "FallbackImages" / self.identifier / self.generation / "FallbackImage.png"
-        return str(data_path.absolute())
+            data_path = f"FallbackImages/{self.identifier}/{self.generation}/FallbackImage.png"
+
+        return f"{self.media_root_path}/{data_path}"
 
 
 class NoteAttachmentTable(NoteAttachment, metaclass=NoteAttachmentMetaClass):

@@ -84,7 +84,7 @@ def build_note_paragraph_style(paragraph_style: ParagraphStyle_pb2) -> Paragraph
     return ParagraphStyle(style_type = style_type, indent_level = indent_amount, check_info = check_info, quote = is_quote)
 
 
-def build_paragraph_lines(attribute_text_list: Sequence[AttributeText]) -> List[NoteContentLine]:
+def build_content_lines(attribute_text_list: Sequence[AttributeText]) -> List[NoteContentLine]:
     split_list = [attribute.splitlines() for attribute in attribute_text_list]
     flatten_text_list = list(itertools.chain.from_iterable(split_list))
 
@@ -109,21 +109,20 @@ def build_paragraph_lines(attribute_text_list: Sequence[AttributeText]) -> List[
     return lines
 
 
-def build_paragraph_list(attribute_text_list: Sequence[AttributeText]) -> Sequence[NoteContentParagraph]:
-    lines: List[NoteContentLine] = build_paragraph_lines(attribute_text_list)
+def build_paragraph_list(content_lines: List[NoteContentLine]) -> Sequence[NoteContentParagraph]:
 
     # build paragraph
     paragraphs: List[NoteContentParagraph] = []
 
     paragraph_stack = []
     previous_line = None
-    for idx, line in enumerate(lines):
+    for idx, line in enumerate(content_lines):
         paragraph_stack.append(line)
 
         if (
             not (previous_line is not None and not line.is_same_paragraph(previous_line))
             and not line.is_paragraph_breaker()
-            and idx != len(lines) - 1
+            and idx != len(content_lines) - 1
         ):
             previous_line = line
         else:

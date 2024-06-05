@@ -23,6 +23,8 @@ mypy_api = "mypy packages/pkg-server"
 mypy = {composite = ["mypy_core", "mypy_api"]}
 lint = {composite = ["mypy", "ruff"]}
 
+unit_test = "pytest packages/pkg-core/tests"
+
 server_test.cmd = "uvicorn agent.asgi:application --host 0.0.0.0 --reload"
 server_test.env_file = ".env.test"
 

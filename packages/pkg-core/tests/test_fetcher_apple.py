@@ -1,10 +1,11 @@
 from typing import List, Sequence
 from loci.domain.models.note import NoteContentLine
-from loci.domain.models.style import AttributeText, TextAttribute
+from loci.domain.models.style import AttributeText, TextAttribute, ParagraphStyle
 import pytest
 import unittest
 
-from loci.infra.helper.apple import build_paragraph_lines, build_paragraph_list
+from loci.infra.helper.apple import build_content_lines, build_paragraph_list
+
 
 class AppleFetcherTests(unittest.TestCase):
     
@@ -19,7 +20,7 @@ class AppleFetcherTests(unittest.TestCase):
             AttributeText(start_index=22, length=3, text="hx", attribute=TextAttribute()),
         ]
 
-        lines: List[NoteContentLine] = build_paragraph_lines(nodes)
+        lines: List[NoteContentLine] = build_content_lines(nodes)
         assert lines[0].plain_text == "Hello World!\n"
         assert lines[1].plain_text == "\n"
         assert lines[2].plain_text == "xixixi\n"
@@ -27,7 +28,10 @@ class AppleFetcherTests(unittest.TestCase):
     
     def test_build_paragraph(self):
         # build_paragraph_list
-        pass
+        lines: List[NoteContentLine] = [
+            NoteContentLine(idx=1, plain_text="Hello World!\n", elements=[], attribute=ParagraphStyle())
+        ]
+        build_paragraph_list(lines)
 
 
 

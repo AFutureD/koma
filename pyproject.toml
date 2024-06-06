@@ -46,3 +46,8 @@ django_settings_module = "agent.settings"
 [tool.ruff.lint]
 fixable = ["ALL"]
 ignore = ["F401"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:.*custom tp_new.*in Python 3.14.*:DeprecationWarning",
+]

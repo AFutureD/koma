@@ -1,10 +1,10 @@
 from typing import List, Sequence
-from loci.domain.models.note import NoteContentLine
-from loci.domain.models.style import AttributeText, TextAttribute, ParagraphStyle
+from koma.domain.models.note import NoteContentLine
+from koma.domain.models.style import AttributeText, TextAttribute, ParagraphStyle
 import pytest
 import unittest
 
-from loci.infra.helper.apple import build_content_lines, build_paragraph_list
+from koma.infra.helper.apple import build_content_lines, build_paragraph_list
 
 
 class AppleFetcherTests(unittest.TestCase):

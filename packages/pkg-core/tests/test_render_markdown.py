@@ -1,9 +1,9 @@
 from pathlib import Path
 import unittest
 
-from loci.domain.models.attachment import NoteAttachment
-from loci.domain.models.style import AttributeText, FontStyle, TextAttribute
-from loci.infra.renderers.markdown import MarkDown
+from koma.domain.models.attachment import NoteAttachment
+from koma.domain.models.style import AttributeText, FontStyle, TextAttribute
+from koma.infra.renderers.markdown import MarkDown
 
 
 class RenderMarkdownTests(unittest.TestCase):

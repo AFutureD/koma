@@ -4,7 +4,7 @@ from django.db import models
 from pgvector.django import HnswIndex, VectorField
 from pydantic import BaseModel
 
-from loci.domain.models.note import Note
+from koma.domain.models.note import Note
 
 from .enum import EmbedModel, IndexState, MemoryType
 

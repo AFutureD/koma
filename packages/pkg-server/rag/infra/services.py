@@ -5,9 +5,9 @@ from typing import List
 import openai
 import tiktoken
 
-from loci.domain.models.note import Note
-from loci.infra.fetchers.apple import AppleNotesFetcher
-from loci.infra.renderers.markdown import MarkDown
+from koma.domain.models.note import Note
+from koma.infra.fetchers.apple import AppleNotesFetcher
+from koma.infra.renderers.markdown import MarkDown
 
 from ..domain.enum import EmbedModel, IndexState, MemoryType
 from ..domain.manager import MemoryManager, MemorySyncLogManager, NeuronIndexLogManager, NeuronManager

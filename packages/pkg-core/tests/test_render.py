@@ -1,6 +1,6 @@
 import pytest
 import unittest
-from loci.core import TextRenderer, RenderAble
+from koma.core import TextRenderer, RenderAble
 
 
 class RenderTests(unittest.TestCase):

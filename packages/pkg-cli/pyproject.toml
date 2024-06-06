@@ -8,7 +8,7 @@ authors = [
 dependencies = [
     "click>=8.1.7",
     "tomlkit>=0.12.4",
-    "loci"
+    "koma"
 ]
 requires-python = ">=3.12"
 readme = "README.md"

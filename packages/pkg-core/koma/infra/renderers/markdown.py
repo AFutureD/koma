@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from loci.core.render import RenderAble
+from koma.core.render import RenderAble
 from ..renderers.base import Renderer
 from ...domain import Note, NoteContent, NoteContentParagraph, NoteContentLine, AttributeText, NoteAttachmentLink, NoteAttachmentMedia, NoteAttachmentTag, NoteAttachmentDraw, NoteAttachmentTable, NoteAttachmentGallery, ParagraphStyleType, FontStyle
 

@@ -1,7 +1,7 @@
 import unittest
 import pytest
 
-from loci.domain import ParagraphStyleType, ParagraphStyle, CheckInfo
+from koma.domain import ParagraphStyleType, ParagraphStyle, CheckInfo
 
 
 class StyleTests(unittest.TestCase):

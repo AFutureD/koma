@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List
 from pydantic import BaseModel, Field
 
-from loci.domain.models.note import Note
+from koma.domain.models.note import Note
 from ..domain.models import Memory, Neuron
 
 

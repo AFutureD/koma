@@ -1,9 +1,10 @@
 import itertools
+import logging
 from datetime import datetime
 from operator import ne
-import cohere
 from typing import List
 
+import cohere
 import openai
 import tiktoken
 
@@ -12,13 +13,18 @@ from koma.infra.fetchers.apple import AppleNotesFetcher
 from koma.infra.renderers.markdown import MarkDown
 
 from ..domain.enum import EmbedModel, IndexState, MemoryType
-from ..domain.manager import MemoryManager, MemorySyncLogManager, NeuronIndexLogManager, NeuronManager
+from ..domain.manager import (
+    MemoryManager,
+    MemorySyncLogManager,
+    NeuronIndexLogManager,
+    NeuronManager,
+)
 from ..domain.models import Memory, MemorySyncLog, Neuron, NeuronIndexLog, Position
 from ..dto.memory import MemoryDTO, NeuronDTO
 
+logger = logging.getLogger(__name__)
 openai_client = openai.OpenAI()
 cohere_client = cohere.Client()
-
 
 class MemorySerivce:
     def sync_modified_memories(self) -> List[Memory]:
@@ -165,8 +171,10 @@ def generate_neurons(memory: Memory) -> List[Neuron]:
     enc = tiktoken.get_encoding("cl100k_base")
     total_token = sum([len(enc.encode(c["content"])) for c in indexable_paragraph])
 
-    assert total_token <= 8191, "Too many tokens"
-
+    if total_token >= 8191:
+        logger.warning(f"Memory {memory.memory_id} has too many tokens {total_token}")
+        return []
+    
     content = [p["content"] for p in indexable_paragraph]
     result = openai_client.embeddings.create(input = content, model = "text-embedding-3-small")
 
@@ -194,9 +202,10 @@ class NeuronBizSerivces:
         return NeuronDTO.from_model_list(neurons)
     
     def search_neurons_as_text(self, query, topk: int) -> str:
+
         if query is None or query == '':
             return ""
-        
+
         neurons = NeuronService().query_similar(query, topk)
 
         return "---\n".join([str(neuron) for neuron in neurons])

@@ -18,6 +18,5 @@ from django.urls import path, include
 from .api import api
 
 urlpatterns = [
-    # path("rag/", include("rag.urls")),
     path("api/", api.urls),
 ]

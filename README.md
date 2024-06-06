@@ -6,7 +6,7 @@ Notice: This project is still in development.
 
 This project(`koma`) is designed to help users search for information on macOS.
 
-Specifically thanks to the [apple_cloud_notes_parser](https://github.com/threeplanetssoftware/apple_cloud_notes_parser).
+Specifically thanks to the [apple_cloud_notes_parser](https://github.com/threeplanetssoftware/apple_cloud_notes_parser) and [neon](https://neon.tech).
 
 
 ## Feature

@@ -165,3 +165,6 @@ class Neuron(models.Model):
                 opclasses = ['vector_cosine_ops']
             )
         ]
+
+    def __str__(self):
+        return self.content

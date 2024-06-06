@@ -1,5 +1,7 @@
 import itertools
 from datetime import datetime
+from operator import ne
+import cohere
 from typing import List
 
 import openai
@@ -14,7 +16,8 @@ from ..domain.manager import MemoryManager, MemorySyncLogManager, NeuronIndexLog
 from ..domain.models import Memory, MemorySyncLog, Neuron, NeuronIndexLog, Position
 from ..dto.memory import MemoryDTO, NeuronDTO
 
-client = openai.OpenAI()
+openai_client = openai.OpenAI()
+cohere_client = cohere.Client()
 
 
 class MemorySerivce:
@@ -101,6 +104,27 @@ class NeuronService:
 
         return
 
+    def query_similar(self, query: str, topk: int) -> List[Neuron]:
+        result = openai_client.embeddings.create(input = query, model = "text-embedding-3-small")
+        embedding = result.data[0].embedding
+
+        neurons = NeuronManager().list_within_distance_on_embedding(embedding = embedding, distance = 0.80)
+        reranked = self.rerank_neurons(neurons=neurons,query=query,topk=topk)
+        return reranked
+
+    @staticmethod
+    def rerank_neurons(neurons: List[Neuron], query: str, topk: int) -> List[Neuron]:
+        
+        neuron_map_by_idx = {idx: neuron for idx, neuron in enumerate(neurons)}
+        documents = [neuron.content for neuron in neurons]
+        rerank_result = cohere_client.rerank(query=query, documents=documents, model="rerank-multilingual-v2.0", top_n=topk).results
+    
+        rerank_result_idx = [item.index for item in rerank_result]
+        return [
+            neuron_map_by_idx[idx]
+            for idx in rerank_result_idx
+        ]
+
 
 class MemoryBizService:
     
@@ -144,7 +168,7 @@ def generate_neurons(memory: Memory) -> List[Neuron]:
     assert total_token <= 8191, "Too many tokens"
 
     content = [p["content"] for p in indexable_paragraph]
-    result = client.embeddings.create(input = content, model = "text-embedding-3-small")
+    result = openai_client.embeddings.create(input = content, model = "text-embedding-3-small")
 
     neurons = [
         Neuron(
@@ -161,13 +185,18 @@ def generate_neurons(memory: Memory) -> List[Neuron]:
 
 
 class NeuronBizSerivces:
-    def search_neurons(self, query) -> List[NeuronDTO]:
+    def search_neurons(self, query: str, topk: int) -> List[NeuronDTO]:
         if query is None or query == '':
             return []
-
-        result = client.embeddings.create(input = query, model = "text-embedding-3-small")
-        embedding = result.data[0].embedding
-
-        neurons = NeuronManager().list_within_distance_on_embedding(embedding = embedding, distance = 0.80)
+        
+        neurons = NeuronService().query_similar(query, topk)
 
         return NeuronDTO.from_model_list(neurons)
+    
+    def search_neurons_as_text(self, query, topk: int) -> str:
+        if query is None or query == '':
+            return ""
+        
+        neurons = NeuronService().query_similar(query, topk)
+
+        return "---\n".join([str(neuron) for neuron in neurons])

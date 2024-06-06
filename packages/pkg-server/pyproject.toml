@@ -13,6 +13,7 @@ dependencies = [
     "pgvector>=0.2.5",
     "tiktoken>=0.7.0",
     "django-ninja>=1.1.0",
+    "cohere>=5.5.4",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
@@ -33,3 +34,7 @@ excludes = ["./**/.git"]
 dev = [
     "uvicorn>=0.29.0",
 ]
+
+
+[tool.pytest]
+DJANGO_SETTINGS_MODULE="agent.settings"

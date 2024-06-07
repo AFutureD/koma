@@ -30,7 +30,7 @@ class AppleNoteField(models.JSONField):
             return value
         
         if isinstance(value, BaseModel):
-            return value.model_dump(mode = 'json', exclude_none = True)
+            return value.model_dump(mode = 'json')
         else:
             return value
 

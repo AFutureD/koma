@@ -27,7 +27,7 @@ lint = {composite = ["mypy", "ruff"]}
 
 unit_test = "pytest packages/pkg-core/tests"
 
-server_test.cmd = "uvicorn agent.asgi:application --host 0.0.0.0 --reload --env-file ./.env.test"
+server_test.cmd = "uvicorn agent.asgi:application --host 0.0.0.0 --reload --env-file .env.test"
 
 django_manage.cmd = "python packages/pkg-server/manage.py {args}"
 django_manage.env_file = ".env.test"

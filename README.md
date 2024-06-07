@@ -1,5 +1,7 @@
 # koma
 
+![exmaple](.github/example.png)
+
 ## Overview
 
 Notice: This project is still in development.

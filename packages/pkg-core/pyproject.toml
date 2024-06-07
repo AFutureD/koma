@@ -1,6 +1,6 @@
 [project]
 name = "koma"
-version = "0.1.0"
+version = "0.1.1"
 description = "The knowledge of macOS for AI."
 authors = [
     {name = "AFuture", email = "afuture.d@outlook.com"},

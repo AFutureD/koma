@@ -1,21 +1,28 @@
-"""
-URL configuration for agent project.
+import logging
+import traceback
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.urls import path, include
-from .api import api
+from django.urls import path
+from ninja import NinjaAPI
+
+from .settings import SERVER_URL
+
+logger = logging.getLogger(__name__)
+
+api = NinjaAPI(servers = [{"url": SERVER_URL}])
+
+api.add_router("/rag", "rag.routers.router")
+
+@api.exception_handler(Exception)
+def service_unavailable(request, exception: Exception):
+    
+    exception_stack = "".join(traceback.format_exception(exception))
+    logger.error(exception_stack)
+    
+    return api.create_response(
+        request,
+        {"err_msg": exception.__str__(), "code": 500, "success": False},
+        status=200,
+    )
 
 urlpatterns = [
     path("api/", api.urls),

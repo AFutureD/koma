@@ -3,7 +3,6 @@ import logging
 
 from django.http.response import HttpResponse
 from django.http.request import HttpRequest
-from ninja import P
 from pydantic import BaseModel
 
 

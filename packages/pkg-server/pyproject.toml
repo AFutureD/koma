@@ -9,10 +9,11 @@ dependencies = [
     "django>=5.0.6",
     "psycopg[binary]>=3.1.19",
     "python-dotenv>=1.0.1",
-    "djangorestframework>=3.15.1",
     "OpenAI>=1.30.1",
     "pgvector>=0.2.5",
     "tiktoken>=0.7.0",
+    "django-ninja>=1.1.0",
+    "cohere>=5.5.4",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
@@ -26,7 +27,14 @@ build-backend = "pdm.backend"
 [tool.pdm]
 distribution = true
 
+[tool.pdm.build]
+excludes = ["./**/.git"]
+
 [tool.pdm.dev-dependencies]
 dev = [
     "uvicorn>=0.29.0",
 ]
+
+
+[tool.pytest]
+DJANGO_SETTINGS_MODULE="agent.settings"

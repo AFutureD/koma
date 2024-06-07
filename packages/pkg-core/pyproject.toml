@@ -1,14 +1,13 @@
 [project]
-name = "loci"
+name = "koma"
 version = "0.1.0"
-description = "Default template for PDM package"
+description = "The knowledge of macOS for AI."
 authors = [
     {name = "AFuture", email = "afuture.d@outlook.com"},
 ]
 dependencies = [
     "protobuf>=5.26.1",
-    "sqlalchemy[asyncio]>=2.0.30",
-    "psycopg[binary]>=3.1.19",
+    "pydantic>=2.7.3",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
@@ -17,6 +16,4 @@ license = {text = "MIT"}
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
-
-[project.scripts]
-qa = "q:cli"
+[tool.pdm]

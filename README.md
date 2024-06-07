@@ -1,35 +1,66 @@
-# loci
+# koma
 
-> The method of loci is a strategy for memory enhancement, 
-> which uses visualizations of familiar spatial environments in order to enhance the recall of information. 
-> The method of loci is also known as the memory journey, 
-> memory palace, journey method, memory spaces, or mind palace technique.
-> 
-> -- wikipedia
- 
 ## Overview
 
 Notice: This project is still in development.
 
-This project(`loci`) is designed to help users search for information on macOS.
+This project(`koma`) is designed to help users search for information on macOS.
 
-Specifically thanks to the [apple_cloud_notes_parser](https://github.com/threeplanetssoftware/apple_cloud_notes_parser).
+Specifically thanks to the [apple_cloud_notes_parser](https://github.com/threeplanetssoftware/apple_cloud_notes_parser) and [neon](https://neon.tech).
 
 
 ## Feature
 
-in progress:
+- [x] [core] List all notes from Notes.app;
+- [x] [core] Convert all notes into markdown;
+- [ ] [core] Get a specific note;
+- [ ] [core] Create a note using AppleScript;
+- [x] [api ] Incremental index all notes and its paragraphs;
+- [x] [api ] Semantic query in both json and plain text;
+- [ ] [api ] Summrize similar content;
+- [ ] [api ] Automatic sync Apple notes.
 
-- [x] [core] get notes from notes.app
-- [x] [core] render notes into markdown
-- [x] [core] incremental save notes into database(current mongodb only)
-- [x] [cli ] list notes
-- [ ] [cli ] get the content of a note from database
-- [ ] [cli ] search notes
+## Usage 
+
+### As a data connector in RAG platform.
+
+By using OpenAPI this is easy to intergate into any rag platform, such as [Dify](https://dify.ai).
+
+In Dify, goto [Tools](https://cloud.dify.ai/tools?category=api) and create one using `<Your Domain>/api/openapi.json`.
+
+### Raycast
+
+TODO.
+
+## Install
+
+### Step 0: Prepare
+
+1. You have [pdm](https://pdm-project.org/en/stable/) and [uvicorn](https://www.uvicorn.org) installed.
+2. Your Terminal have [Full Disk Access](https://www.perplexity.ai/search/How-to-enable-mOAW4vpVRlmeMvtg6EjnNw) permission.
+3. Your Apple Notes.app folder is `~/Library/Group Containers/group.com.apple.notes`
+4. Configure the `.env`
+
+### Step 1: download this project
+
+```
+> git clone https://github.com/AFutureD/koma.git
+```
+
+### Step 2: Install dependencies.
+
+```
+> cd koma
+> pdm sync
+```
+
+### Step 3: Run server
+
+```
+> pdm run django_manage migrate rag
+> uvicorn agent.asgi:application --host 0.0.0.0 --env-file ./.env
+```
 
 
-TODO:
-
-- [ ] [core] using pyiCloud. 
 
 

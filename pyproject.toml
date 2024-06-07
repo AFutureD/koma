@@ -1,4 +1,6 @@
 [project]
+name = "koma-project"
+version = "0.1.0"
 requires-python = ">=3.12"
 
 [tool.pdm.dev-dependencies]
@@ -12,16 +14,20 @@ dev = [
     "uvicorn>=0.29.0",
     "django-stubs[compatible-mypy]>=5.0.0",
     "ipython>=8.24.0",
+    "pytest>=8.2.1",
 ]
 
 [tool.pdm.scripts]
 
 ruff = "ruff check"
-mypy = "mypy packages"
-lint = {composite = ["ruff", "mypy"]}
+mypy_core = "mypy packages/pkg-core"
+mypy_api = "mypy packages/pkg-server"
+mypy = {composite = ["mypy_core", "mypy_api"]}
+lint = {composite = ["mypy", "ruff"]}
 
-server_test.cmd = "uvicorn agent.asgi:application"
-server_test.env_file = ".env.test"
+unit_test = "pytest packages/pkg-core/tests"
+
+server_test.cmd = "uvicorn agent.asgi:application --host 0.0.0.0 --reload --env-file ./.env.test"
 
 django_manage.cmd = "python packages/pkg-server/manage.py {args}"
 django_manage.env_file = ".env.test"
@@ -41,3 +47,8 @@ django_settings_module = "agent.settings"
 [tool.ruff.lint]
 fixable = ["ALL"]
 ignore = ["F401"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:.*custom tp_new.*in Python 3.14.*:DeprecationWarning",
+]

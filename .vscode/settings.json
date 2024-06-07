@@ -4,8 +4,20 @@
     "files.exclude": {
       "**/__pycache__": true,
       "**/.mypy_cache": true,
-      ".pdm-python": true,
+      "**/.pdm-python": true,
       "**/.pdm-build": true,
-      ".venv": true 
-    }
+      "**/.venv": true,
+      "**/.idea": true,
+      "**/.ruff_cache": true,
+      "**/.pytest_cache": true,
+    },
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.inlayHints.pytestParameters": true,
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": [
+      "packages"
+    ],
+    "terminal.integrated.shellIntegration.history": 100000,
   }

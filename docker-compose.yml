@@ -15,6 +15,6 @@ services:
       - PGDATABASE=${PGDATABASE}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - CO_API_KEY=${CO_API_KEY}
-      - APPLE_NOTES_FOLDER=/root/group.com.apple.notes
+      - APPLE_NOTES_FOLDER=/root/group.com.apple.notes  # DO NOT CHANGE THIS
     volumes:
       - ${HOME}/Library/Group Containers/group.com.apple.notes:/root/group.com.apple.notes

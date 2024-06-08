@@ -23,12 +23,13 @@ mypy_api = "mypy packages/pkg-server"
 mypy = {composite = ["mypy_core", "mypy_api"]}
 lint = {composite = ["mypy", "ruff"]}
 
-unit_test = "pytest packages/pkg-core/tests"
+test = "pytest packages/pkg-core/tests"
 
-server_test.cmd = "uvicorn agent.asgi:application --host 0.0.0.0 --reload --env-file .env.test"
+setup = "python packages/pkg-server/manage.py migrate rag"
+server = "uvicorn agent.asgi:application --host 0.0.0.0 --reload {args}"
 
-django_manage.cmd = "python packages/pkg-server/manage.py {args}"
-django_manage.env_file = ".env.test"
+manage.cmd = "python packages/pkg-server/manage.py {args}"
+manage.env_file = ".env.test"
 
 query = {call = "cli.endpoint:cli"}
 

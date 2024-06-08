@@ -1,0 +1,16 @@
+name: koma
+
+services:
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      tags: 
+        - "koma-api:0.1.0"
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: ./.env
+    privileged: true
+    volumes:
+      - ${HOME}/Library/Group\ Containers/group.com.apple.notes:/home/group.com.apple.notes

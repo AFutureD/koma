@@ -14,6 +14,8 @@ dependencies = [
     "tiktoken>=0.7.0",
     "django-ninja>=1.1.0",
     "cohere>=5.5.4",
+    "koma @ file:///${PROJECT_ROOT}/../pkg-core",
+    "uvicorn[standard]>=0.30.1",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
@@ -30,11 +32,10 @@ distribution = true
 [tool.pdm.build]
 excludes = ["./**/.git"]
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "uvicorn>=0.29.0",
-]
 
+[tool.pdm.scripts]
+
+server = "uvicorn agent.asgi:application --host 0.0.0.0"
 
 [tool.pytest]
 DJANGO_SETTINGS_MODULE="agent.settings"

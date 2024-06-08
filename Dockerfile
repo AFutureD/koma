@@ -7,7 +7,7 @@ ENV PDM_CHECK_UPDATE=false
 
 FROM base AS production
 
-ARG PROJECT_DIR=/home/koma/
+ARG PROJECT_DIR=/root/koma/
 
 COPY pyproject.toml pdm.lock $PROJECT_DIR
 COPY packages/ $PROJECT_DIR/packages

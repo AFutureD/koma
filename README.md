@@ -39,7 +39,7 @@ TODO.
 ### Step 0: Prepare
 
 1. You have [pdm](https://pdm-project.org/en/stable/) and [uvicorn](https://www.uvicorn.org) installed.
-2. Your Terminal have [Full Disk Access](https://www.perplexity.ai/search/How-to-enable-mOAW4vpVRlmeMvtg6EjnNw) permission.
+2. Your Terminal or Docker have [Full Disk Access](https://www.perplexity.ai/search/How-to-enable-mOAW4vpVRlmeMvtg6EjnNw) permission.
 3. Your Apple Notes.app folder is `~/Library/Group Containers/group.com.apple.notes`
 4. Configure the `.env`
 

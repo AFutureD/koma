@@ -5,12 +5,16 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-      tags: 
-        - "koma-api:0.1.0"
     ports:
       - "8000:8000"
-    env_file:
-      - path: ./.env
-    privileged: true
+    environment:
+      - SERVER_URL=${SERVER_URL}
+      - PGHOST=${PGHOST}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDATABASE=${PGDATABASE}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CO_API_KEY=${CO_API_KEY}
+      - APPLE_NOTES_FOLDER=/root/group.com.apple.notes
     volumes:
-      - ${HOME}/Library/Group\ Containers/group.com.apple.notes:/home/group.com.apple.notes
+      - ${HOME}/Library/Group Containers/group.com.apple.notes:/root/group.com.apple.notes

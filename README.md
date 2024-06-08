@@ -1,6 +1,6 @@
 # koma
 
-![exmaple](.github/example.png)
+![exmaple](.github/example.jpg)
 
 ## Overview
 
@@ -110,13 +110,14 @@ See Section [Configuration](#configuration).
 
 <details>
 
-| Key        | Description                                                                                | Default               | Required | Example             |
-| :--------- | :----------------------------------------------------------------------------------------- | :-------------------- | :------: | :------------------ |
-| SERVER_URL | The Server Url used in [OpenAPI](https://spec.openapis.org/oas/latest.html#fixed-fields-3) | http://localhost:8000 |  False   | https://example.com |
-| PGHOST     | The host of PostgreSQL                                                                     | -                     |   True   | *.neon.tech         |
-| PGUSER     | The user of PostgreSQL                                                                     | -                     |   True   | db_name             |
-| PGPASSWORD | The password of PostgreSQL                                                                 | -                     |   True   | user_name           |
-| PGDATABASE | The db name of PostgreSQL                                                                  | -                     |   True   | password            |
+| Key                | Description                                                                                | Default               | Required | Example                     |
+| :----------------- | :----------------------------------------------------------------------------------------- | :-------------------- | :------: | :-------------------------- |
+| SERVER_URL         | The Server Url used in [OpenAPI](https://spec.openapis.org/oas/latest.html#fixed-fields-3) | http://localhost:8000 |  False   | https://example.com         |
+| PGHOST             | The host of PostgreSQL                                                                     | -                     |   True   | *.neon.tech                 |
+| PGUSER             | The user of PostgreSQL                                                                     | -                     |   True   | db_name                     |
+| PGPASSWORD         | The password of PostgreSQL                                                                 | -                     |   True   | user_name                   |
+| PGDATABASE         | The db name of PostgreSQL                                                                  | -                     |   True   | password                    |
+| APPLE_NOTES_FOLDER | Used when deployed in a docker                                                             | -                     |  False   | /root/group.com.apple.notes |
 
 </details>
 

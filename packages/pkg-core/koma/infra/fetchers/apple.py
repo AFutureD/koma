@@ -5,7 +5,7 @@ import zlib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, MutableSequence, Sequence, override
-
+import os
 
 from ...domain import (
     AttributeText,
@@ -126,9 +126,9 @@ class AppleNotesAccount:
 
 class AppleNotesFetcher(BaseFetcher):
     GZIP_BLOB_HEADER_OFFSET = 15 + 32
-    NOTE_FOLDER_ROOT = Path.home() / "./Library/Group Containers/group.com.apple.notes/"
-    NOTE_STORE_PATH = NOTE_FOLDER_ROOT / "NoteStore.sqlite"
-    NOTE_MEDIA_ROOT = NOTE_FOLDER_ROOT / "Accounts/"
+    NOTE_FOLDER_ROOT: Path
+    NOTE_STORE_PATH: Path
+    NOTE_MEDIA_ROOT: Path 
 
     connection: sqlite3.Connection
 
@@ -140,7 +140,27 @@ class AppleNotesFetcher(BaseFetcher):
 
     def __init__(self, renderer: Renderer):
         super().__init__(renderer)
+        
+        note_dir = os.environ.get('APPLE_NOTES_FOLDER')
+        if note_dir is None or note_dir == "":
+            self.NOTE_FOLDER_ROOT = Path.home() / "./Library/Group Containers/group.com.apple.notes/"
+        else:
+            self.NOTE_FOLDER_ROOT = Path(note_dir)
+        
+        self.NOTE_STORE_PATH = self.NOTE_FOLDER_ROOT / "NoteStore.sqlite"
+        self.NOTE_MEDIA_ROOT = self.NOTE_FOLDER_ROOT / "Accounts/"
         self.connection = sqlite3.connect(self.NOTE_STORE_PATH.resolve())
+        
+        cursor = self.connection.cursor()
+        try:
+            res = cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            table_names = res.fetchall()
+            assert "ZICCLOUDSYNCINGOBJECT" in table_names
+        except Exception as e:
+            print("ERROR", e)
+        finally:
+            cursor.close()
+
 
     @override
     def shutdown(self):

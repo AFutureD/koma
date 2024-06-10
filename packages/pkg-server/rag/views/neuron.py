@@ -15,18 +15,18 @@ router = Router()
 
 neuron_biz_services = NeuronBizSerivces()
 
-@router.post('/search.json', response=Result[List[NeuronDTO]])
-def search_neurons_json(request, query: str, topk: int) -> Result[List[NeuronDTO]]:
+@router.get('/search.json', response=Result[List[NeuronDTO]])
+def search_neurons_json(request, query: str, topk: int = 10) -> Result[List[NeuronDTO]]:
     dto = neuron_biz_services.search_neurons(query=query, topk=topk)
     return Result.with_data(dto)
 
 
-@router.post('/search.text', response=Result[str])
-def search_neurons_text(request, query: str, topk: int) -> Result[str]:
+@router.get('/search.text', response=str)
+def search_neurons_text(request, query: str, topk: int) -> str:
     result_str = neuron_biz_services.search_neurons_as_text(query=query, topk=topk)
-    return Result.with_data(result_str)
+    return result_str
 
 
-@router.post('/summrize.text', response=Result[str])
+@router.get('/summrize.text', response=Result[str])
 def summrize_neurons(request, query: str) -> Result[str]:
     return Result.with_data("")

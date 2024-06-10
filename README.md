@@ -25,13 +25,39 @@ Specifically thanks to the [apple_cloud_notes_parser](https://github.com/threepl
 
 ## Usage 
 
+### Restful API
+
+The full api documents can be found in built-in OpenAPI document with url `<Your Domain>/api/docs`.
+
+
+**Examples**
+
+```bash
+> # sync notes
+> curl -X POST "http://localhost:8000/api/rag/memories/sync.json"
+
+> # list all notes
+> curl -X GET "http://localhost:8000/api/rag/memories/list.json"
+
+> # query notes
+> curl -X GET "http://localhost:8000/api/rag/neurons/search.json?query=apple"
+
+> # query notes but in text format
+> curl -X GET "http://localhost:8000/api/rag/neurons/search.txt?query=apple&topk=5"
+```
+
+
 ### As a data connector in RAG platform.
 
 By using OpenAPI this is easy to intergate into any rag platform, such as [Dify](https://dify.ai).
 
+### Use it in Dify
+<details>
+
 In Dify, goto [Tools](https://cloud.dify.ai/tools?category=api) and create one using `<Your Domain>/api/openapi.json`.
 
-Goto [Home koma](https://afuture.notion.site/koma-6b6891fabc524f9884748731b586dda0) see step by step guide.
+</details>
+
 
 ### Raycast
 
@@ -49,20 +75,32 @@ TODO.
 2. Your Docker have [Full Disk Access](https://www.perplexity.ai/search/How-to-enable-mOAW4vpVRlmeMvtg6EjnNw) permission.
 3. Your Apple Notes.app folder is `~/Library/Group Containers/group.com.apple.notes`
 
-#### Step 1: Download this project
+#### Step 1: Download the `docker-compose.yml`
 
 ```
-> git clone https://github.com/AFutureD/koma.git
+> curl -O https://raw.githubusercontent.com/AFutureD/koma/master/docker-compose.yml
 ```
 
-#### Step 2: Configure the `.env`
+#### Step 2: Configure the `enviroments` 
 
 See Section [Configuration](#configuration).
+
+```
+x-shared_environment: &shared_environment
+  SERVER_URL: 'https://example.com'
+  PGHOST: '*.neon.tech'
+  PGUSER: 'user_name'
+  PGPASSWORD: '<password>'
+  PGDATABASE: 'db_name'
+  OPENAI_API_KEY: 'sk-xxx'
+  CO_API_KEY: 'xxxxx'
+```
 
 #### Step 3: Run server
 
 ```
-> docker-compose up -d
+> docker-compose up -d migrate
+> docker-compose up -d api
 ```
 
 </details>

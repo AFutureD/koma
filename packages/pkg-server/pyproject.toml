@@ -35,6 +35,7 @@ excludes = ["./**/.git"]
 
 [tool.pdm.scripts]
 
+migrate = "python ./manage.py migrate rag"
 server = "uvicorn agent.asgi:application --host 0.0.0.0"
 
 [tool.pytest]

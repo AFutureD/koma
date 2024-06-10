@@ -15,4 +15,6 @@ RUN pdm install --check --prod --no-editable
 
 EXPOSE 8000
 
-CMD ["pdm", "run", "server"]
+ENTRYPOINT [ "pdm" ]
+
+CMD ["run", "server"]

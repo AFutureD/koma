@@ -1,18 +1,30 @@
 name: koma
 
+
+x-shared_environment: &shared_environment
+  SERVER_URL: 'https://example.com'
+  PGHOST: '*.neon.tech'
+  PGUSER: 'user_name'
+  PGPASSWORD: '<password>'
+  PGDATABASE: 'db_name'
+  OPENAI_API_KEY: 'sk-xxx'
+  CO_API_KEY: 'xxxxx'
+  
+
 services:
   api:
-    image: afuture/koma:0.0.1
+    image: afuture/koma:latest
     ports:
       - "8000:8000"
     environment:
-      SERVER_URL: 'https://example.com'
-      PGHOST: '*.neon.tech'
-      PGUSER: 'user_name'
-      PGPASSWORD: '<password>'
-      PGDATABASE: 'db_name'
-      OPENAI_API_KEY: 'sk-xxx'
-      CO_API_KEY: 'xxxxx'
+      <<: *shared_environment
       APPLE_NOTES_FOLDER: '/root/group.com.apple.notes'  # DO NOT CHANGE THIS
+    command: ["run", "server"]
     volumes:
       - ${HOME}/Library/Group Containers/group.com.apple.notes:/root/group.com.apple.notes
+
+  migrate:
+    image: afuture/koma:latest
+    environment:
+      <<: *shared_environment
+    command: ["run", "migrate"]

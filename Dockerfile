@@ -7,12 +7,10 @@ ENV PDM_CHECK_UPDATE=false
 
 FROM base AS production
 
-ARG PROJECT_DIR=/root/koma/
+COPY pyproject.toml pdm.lock /root/koma/
+COPY packages/ /root/koma/packages
 
-COPY pyproject.toml pdm.lock $PROJECT_DIR
-COPY packages/ $PROJECT_DIR/packages
-
-WORKDIR $PROJECT_DIR/packages/pkg-server 
+WORKDIR /root/koma/packages/pkg-server 
 RUN pdm install --check --prod --no-editable
 
 EXPOSE 8000

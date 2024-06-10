@@ -2,19 +2,17 @@ name: koma
 
 services:
   api:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    image: afuture/koma:0.0.1
     ports:
       - "8000:8000"
     environment:
-      - SERVER_URL=${SERVER_URL}
-      - PGHOST=${PGHOST}
-      - PGUSER=${PGUSER}
-      - PGPASSWORD=${PGPASSWORD}
-      - PGDATABASE=${PGDATABASE}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - CO_API_KEY=${CO_API_KEY}
-      - APPLE_NOTES_FOLDER=/root/group.com.apple.notes  # DO NOT CHANGE THIS
+      SERVER_URL: 'https://example.com'
+      PGHOST: '*.neon.tech'
+      PGUSER: 'user_name'
+      PGPASSWORD: '<password>'
+      PGDATABASE: 'db_name'
+      OPENAI_API_KEY: 'sk-xxx'
+      CO_API_KEY: 'xxxxx'
+      APPLE_NOTES_FOLDER: '/root/group.com.apple.notes'  # DO NOT CHANGE THIS
     volumes:
       - ${HOME}/Library/Group Containers/group.com.apple.notes:/root/group.com.apple.notes

@@ -157,7 +157,7 @@ class AppleNotesFetcher(BaseFetcher):
             table_names = res.fetchall()
             assert "ZICCLOUDSYNCINGOBJECT" in table_names
         except Exception as e:
-            print("ERROR", e)
+            logger.error(f"Error: {e}")
         finally:
             cursor.close()
 
@@ -187,7 +187,7 @@ class AppleNotesFetcher(BaseFetcher):
             res = cursor.execute(ALL_ACCOUNT_QUERY)
             account_rows = res.fetchall()
         except Exception as e:
-            print("ERROR", e)
+            logger.error(f"Error: {e}")
         finally:
             cursor.close()
 
@@ -206,7 +206,7 @@ class AppleNotesFetcher(BaseFetcher):
             res = cursor.execute(ALL_ATTACHMENTS_QUERY)
             attachment_rows = res.fetchall()
         except Exception as e:
-            print("ERROR", e)
+            logger.error(f"Error: {e}")
         finally:
             cursor.close()
 
@@ -230,7 +230,7 @@ class AppleNotesFetcher(BaseFetcher):
                 account = self.account_by_pk_map.get(account_pk)
                 media_root_path = str(self.NOTE_MEDIA_ROOT / f"{account.identifier}")
             else:
-                print("ERROR: account not found. attachment pk: ", z_pk)
+                logger.error(f"Error: account not found. attachment pk: {z_pk}")
 
             attachment = NoteAttachment(
                 type_uti = attachment_uti, z_pk = z_pk, identifier = attachment_identifier, note_pk = note_pk,
@@ -264,7 +264,7 @@ class AppleNotesFetcher(BaseFetcher):
             res = cursor.execute(ALL_NOTES_QUERY)
             note_rows = res.fetchall()
         except Exception as e:
-            print("ERROR", e)
+            logger.error(f"Error: {e}")
         finally:
             cursor.close()
 

@@ -104,7 +104,7 @@ class NeuronService:
         
         for indexLog in indexLogs:
             indexLog.state = IndexState.INDEXED
-            indexLog.indexed_at = datetime.now()
+            indexLog.indexed_at = datetime.now().astimezone()
 
         NeuronIndexLogManager().bulk_update(indexLogs, fields=["state", "indexed_at"], batch_size=20)
 
